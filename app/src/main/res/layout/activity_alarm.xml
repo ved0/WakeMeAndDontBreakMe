@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="xs.wakemeanddontbreakme.AlarmActivity">
+
+    <TimePicker
+        android:id="@+id/timePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="800px"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+    </TimePicker>
+
+    <ToggleButton
+        android:id="@+id/Mon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="M"
+        android:layout_below="@+id/timePicker"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp" />
+    <ToggleButton
+        android:id="@+id/Tue"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="T"
+        android:layout_below="@+id/timePicker"
+        android:layout_toRightOf="@+id/Mon"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp" />
+    <ToggleButton
+        android:id="@+id/Wed"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="W"
+        android:layout_below="@+id/timePicker"
+        android:layout_toRightOf="@+id/Tue"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp"/>
+    <ToggleButton
+        android:id="@+id/Thu"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="T"
+        android:layout_below="@+id/timePicker"
+        android:layout_toRightOf="@+id/Wed"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp" />
+    <ToggleButton
+        android:id="@+id/Fri"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="F"
+        android:layout_below="@+id/timePicker"
+        android:layout_toRightOf="@+id/Thu"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp" />
+
+</RelativeLayout>
