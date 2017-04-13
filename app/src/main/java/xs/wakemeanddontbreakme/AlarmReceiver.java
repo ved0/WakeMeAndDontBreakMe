@@ -14,14 +14,20 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
+//    @Override
+//    public void onReceive(Context context, Intent intent) {
+//        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+//        if (alarmUri == null){
+//            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        }
+//        Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
+//        ringtone.play();
+//    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (alarmUri == null){
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        }
-        Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
-        ringtone.play();
+        Intent i = new Intent(context, TestTask.class);
+        context.startActivity(i);
     }
 }
 
