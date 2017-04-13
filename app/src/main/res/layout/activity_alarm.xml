@@ -12,6 +12,7 @@
         android:layout_height="350dp"
         android:timePickerMode="spinner"
         android:layout_below="@+id/cancelButton"
+        android:layout_marginTop="5dp"
         android:layout_centerHorizontal="true">
 
     </TimePicker>
@@ -22,51 +23,57 @@
         android:layout_height="40dp"
         android:textOff="@string/toggleMon"
         android:textOn="@string/toggleMon"
-        android:layout_alignBottom="@+id/Thu"
-        android:layout_toLeftOf="@+id/timePicker"
-        android:layout_toStartOf="@+id/timePicker"
-        android:layout_marginBottom="14dp" />
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="250dp"
+        android:layout_alignParentBottom="true"
+        />
     <ToggleButton
         android:id="@+id/Tue"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:textOff="@string/toggleTue"
         android:textOn="@string/toggleTue"
-        android:layout_alignBaseline="@+id/Mon"
-        android:layout_alignBottom="@+id/Mon"
-        android:layout_toLeftOf="@+id/Wed"
-        android:layout_toStartOf="@+id/Wed" />
+        android:layout_alignTop="@+id/Mon"
+        android:layout_toRightOf="@+id/Mon"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        />
     <ToggleButton
         android:id="@+id/Wed"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:textOff="@string/toggleWed"
         android:textOn="@string/toggleWed"
-        android:layout_marginRight="19dp"
-        android:layout_marginEnd="19dp"
-        android:layout_marginBottom="13dp"
-        android:layout_alignBottom="@+id/Fri"
-        android:layout_toLeftOf="@+id/applyButton"
-        android:layout_toStartOf="@+id/applyButton" />
+        android:layout_alignTop="@+id/Mon"
+        android:layout_toRightOf="@+id/Tue"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+  />
     <ToggleButton
         android:id="@+id/Thu"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:textOff="@string/toggleThu"
         android:textOn="@string/toggleThu"
-        android:layout_marginBottom="68dp"
-        android:layout_alignBottom="@+id/timePicker"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignTop="@+id/Mon"
+        android:layout_toRightOf="@+id/Wed"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+        />
+
     <ToggleButton
         android:id="@+id/Fri"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:textOff="@string/toggleFri"
         android:textOn="@string/toggleFri"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignTop="@+id/Mon"
+        android:layout_toRightOf="@+id/Thu"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+ />
 
     <ToggleButton
         android:id="@+id/Sat"
@@ -74,9 +81,11 @@
         android:layout_height="40dp"
         android:textOff="@string/toggleSat"
         android:textOn="@string/toggleSat"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignTop="@+id/Mon"
+        android:layout_toRightOf="@+id/Fri"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
+ />
 
     <ToggleButton
         android:id="@+id/Sun"
@@ -84,9 +93,9 @@
         android:layout_height="40dp"
         android:textOff="@string/toggleSun"
         android:textOn="@string/toggleSun"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/Mon"
-        android:layout_alignStart="@+id/Mon" />
+        android:layout_alignTop="@+id/Mon"
+        android:layout_toRightOf="@+id/Sat"
+ />
 
     <Button
         android:id="@+id/cancelButton"
@@ -108,6 +117,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:onClick="onApplyPress"
         android:text="@string/Apply"
         tools:text="@string/Apply" />
 
