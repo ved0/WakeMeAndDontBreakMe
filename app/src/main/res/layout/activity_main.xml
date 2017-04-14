@@ -6,17 +6,26 @@
     android:layout_height="match_parent"
     tools:context="xs.wakemeanddontbreakme.MainActivity">
 
-    <Button
-        android:id="@+id/addButton"
-        android:layout_width="wrap_content"
+    <Button android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
         android:text="@string/AddAlarm"
-        tools:text="@string/AddAlarm"
         android:onClick="addAlarm"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp" />
+        android:id="@+id/addButton"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_alignParentBottom="true" />
+
+    <ListView android:layout_width="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_height="460dp" android:id="@+id/alarm_list"
+        android:layout_alignParentTop="true" android:layout_above="@id/addButton" />
+
+
+
+
+
+
 </android.support.constraint.ConstraintLayout>

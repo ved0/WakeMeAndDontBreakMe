@@ -18,7 +18,7 @@ import java.util.Calendar;
 
 public class AlarmActivity extends AppCompatActivity {
     //private int[] daysToggled;
-    MainActivity mainActivity;
+    //MainActivity mainActivity;
     AlarmManager alarmManager;
     TimePicker alarmTimePicker;
     PendingIntent pendingIntent;
@@ -27,7 +27,7 @@ public class AlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
-        mainActivity = new MainActivity();
+      //  mainActivity = new MainActivity();   behövs detta?
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
         //daysToggled = new int[7];
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
