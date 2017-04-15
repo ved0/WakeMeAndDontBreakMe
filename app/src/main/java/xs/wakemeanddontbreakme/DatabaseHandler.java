@@ -57,19 +57,21 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    //Will be used
     public void removeAlarm(String alarmName, String alarmTime){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ALARMS, ALARM_NAME + " = ? AND "+ ALARM_TIME + " = ?",new String[]{alarmName,alarmTime});
         db.close();
     }
 
-
+    //Will be used
     public void removeAllAlarms(){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ALARMS,null,null);
         db.close();
     }
 
+    //Will be used
     public String getAlarm(String alarmName, String alarmTime){
         String alarm = "";
         SQLiteDatabase db = this.getReadableDatabase();

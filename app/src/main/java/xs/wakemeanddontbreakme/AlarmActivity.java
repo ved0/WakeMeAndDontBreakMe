@@ -71,13 +71,16 @@ public class AlarmActivity extends AppCompatActivity {
         calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
 
         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-        String alarmName = "Alarm "+ db.getAllAlarms().size()+1;
+        int ordning = db.getAllAlarms().size()+1;
+        String alarmName = "Alarm "+ ordning;
         String alarmTime = alarmTimePicker.getHour()+":"+alarmTimePicker.getMinute();
         String alarmDay = "";
         for(ToggleButton tb : toogledButtons()){
         alarmDay += tb.getTextOn();
         }
         db.addAlarm(alarmName,alarmTime,alarmDay);
+       // MainActivity.rw.notifyDataSetChanged();
+
         //Create Intent to trigger on alarm
         Intent receiverIntent = new Intent(this, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, receiverIntent, 0);

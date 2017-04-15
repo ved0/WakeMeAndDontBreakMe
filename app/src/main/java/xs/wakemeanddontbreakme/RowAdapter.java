@@ -61,7 +61,6 @@ public class RowAdapter extends BaseAdapter {
         for(String s: db.getAllAlarms()){
             alarmText.setText(s);
             alarmImage.setImageResource(R.drawable.alarm_icon);
-
         }
         return vi;
 
