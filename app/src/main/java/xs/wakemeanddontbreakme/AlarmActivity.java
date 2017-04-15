@@ -71,7 +71,7 @@ public class AlarmActivity extends AppCompatActivity {
         calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
 
         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-        String alarmName = "Alarm "+ db.getAllAlarms().size();
+        String alarmName = "Alarm "+ db.getAllAlarms().size()+1;
         String alarmTime = alarmTimePicker.getHour()+":"+alarmTimePicker.getMinute();
         String alarmDay = "";
         for(ToggleButton tb : toogledButtons()){
