@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Vedad on 2017-04-15.
@@ -78,7 +77,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         Cursor cursor = db.query(ALARMS,new String[]{ALARM_NAME, ALARM_TIME, ALARM_DAY}, ALARM_NAME + "=? AND "+ ALARM_TIME +" = ?", new String[]{alarmName, alarmTime},null,null,null,null);
         if(cursor != null){
             cursor.moveToFirst();
-            alarm = "Name "+ cursor.getString(1)+"\n Time "+cursor.getString(2)+"\n Day "+cursor.getString(3);
+            alarm = " Name "+ cursor.getString(1)+"\n Time "+cursor.getString(2)+"\n Day "+cursor.getString(3);
         }
         return alarm;
     }
@@ -90,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery(selectAllQuery, null);
         if(cursor.moveToFirst()){
             do{
-                String alarm = "Name "+ cursor.getString(1)+"\n Time "+cursor.getString(2)+"\n Day "+cursor.getString(3);
+                String alarm = " Name "+ cursor.getString(1)+"\n Time "+cursor.getString(2)+"\n Day "+cursor.getString(3);
                 alarmList.add(alarm);
             }while(cursor.moveToNext());
         }

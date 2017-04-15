@@ -6,15 +6,9 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TimePicker;
-import android.widget.Button;
 import android.widget.ToggleButton;
 
 
@@ -71,15 +65,20 @@ public class AlarmActivity extends AppCompatActivity {
         calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
 
         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-        int ordning = db.getAllAlarms().size()+1;
-        String alarmName = "Alarm "+ ordning;
+        int order = db.getAllAlarms().size()+1;
+        String alarmName = "Alarm "+ order;
         String alarmTime = alarmTimePicker.getHour()+":"+alarmTimePicker.getMinute();
         String alarmDay = "";
         for(ToggleButton tb : toogledButtons()){
-        alarmDay += tb.getTextOn();
+        alarmDay += tb.getTextOn()+" ";
         }
+        int end = alarmDay.length()-1;
+        alarmDay = alarmDay.substring(0,end);
         db.addAlarm(alarmName,alarmTime,alarmDay);
-       // MainActivity.rw.notifyDataSetChanged();
+
+        //Feels glitchy, but it works ! :)
+        ListView lv = (ListView) findViewById(R.id.alarm_list);
+        ((RowAdapter) lv.getAdapter()).notifyDataSetChanged();
 
         //Create Intent to trigger on alarm
         Intent receiverIntent = new Intent(this, AlarmReceiver.class);

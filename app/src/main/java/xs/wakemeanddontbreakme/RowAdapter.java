@@ -5,17 +5,12 @@ package xs.wakemeanddontbreakme;
  */
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 
 
@@ -59,11 +54,8 @@ public class RowAdapter extends BaseAdapter {
         for(String s: db.getAllAlarms()){
         TextView alarmText = (TextView) vi.findViewById(R.id.alarmText);
         ImageView alarmImage = (ImageView) vi.findViewById(R.id.alarmImage);
-       alarmText.setText(db.getAllAlarms().get(position));
+            alarmText.setText(db.getAllAlarms().get(position));
             alarmImage.setImageResource(R.drawable.alarm_icon);
-        //for(String s: db.getAllAlarms()){
-            //alarmText.setText(s);
-            //alarmImage.setImageResource(R.drawable.alarm_icon);
         }
         return vi;
 
