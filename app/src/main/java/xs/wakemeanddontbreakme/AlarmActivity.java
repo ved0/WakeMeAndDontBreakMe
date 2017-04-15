@@ -17,8 +17,6 @@ import java.util.Calendar;
 
 
 public class AlarmActivity extends AppCompatActivity {
-    //private int[] daysToggled;
-    //MainActivity mainActivity;
     AlarmManager alarmManager;
     TimePicker alarmTimePicker;
     PendingIntent pendingIntent;
@@ -27,15 +25,13 @@ public class AlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
-      //  mainActivity = new MainActivity();   behövs detta?
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
-        //daysToggled = new int[7];
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
-    private ArrayList<ToggleButton> toogledButtons(){
-        ArrayList<ToggleButton> temp = new ArrayList<ToggleButton>();
-        ArrayList<ToggleButton> toogledButtons = new ArrayList<ToggleButton>();
+    private ArrayList<ToggleButton> toggledButtons(){
+        ArrayList<ToggleButton> temp = new ArrayList<>();
+        ArrayList<ToggleButton> toggledButtons = new ArrayList<>();
         ToggleButton toggleMon = (ToggleButton) findViewById(R.id.Mon);
         temp.add(toggleMon);
         ToggleButton toggleTue = (ToggleButton) findViewById(R.id.Tue);
@@ -52,10 +48,10 @@ public class AlarmActivity extends AppCompatActivity {
         temp.add(toggleSun);
         for(ToggleButton tb : temp){
             if(tb.isChecked()){
-                toogledButtons.add(tb);
+                toggledButtons.add(tb);
             }
         }
-        return toogledButtons;
+        return toggledButtons;
     }
 
     public void onApplyPress(View view) {
@@ -65,20 +61,15 @@ public class AlarmActivity extends AppCompatActivity {
         calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
 
         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-        int order = db.getAllAlarms().size()+1;
+        int order = db.getAllAlarms().size() + 1;
         String alarmName = "Alarm "+ order;
         String alarmTime = alarmTimePicker.getHour()+":"+alarmTimePicker.getMinute();
         String alarmDay = "";
-        for(ToggleButton tb : toogledButtons()){
-        alarmDay += tb.getTextOn()+" ";
+        for(ToggleButton tb : toggledButtons()){
+            alarmDay += tb.getTextOn()+" ";
         }
-        int end = alarmDay.length()-1;
-        alarmDay = alarmDay.substring(0,end);
-        db.addAlarm(alarmName,alarmTime,alarmDay);
 
-        //Feels glitchy, but it works ! :)
-        ListView lv = (ListView) findViewById(R.id.alarm_list);
-        ((RowAdapter) lv.getAdapter()).notifyDataSetChanged();
+        db.addAlarm(alarmName, alarmTime, alarmDay);
 
         //Create Intent to trigger on alarm
         Intent receiverIntent = new Intent(this, AlarmReceiver.class);

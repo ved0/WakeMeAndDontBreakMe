@@ -22,16 +22,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         db = new DatabaseHandler(getApplicationContext());
+        lv = (ListView) findViewById(R.id.alarm_list);
 
         //rensa larmlistan
         //db.removeAllAlarms();
-
-        alarms = db.getAllAlarms();
-        lv = (ListView) findViewById(R.id.alarm_list);
-        lv.setAdapter(new RowAdapter(this,alarms,alarms.size()));
+        updateInterface();
     }
 
-    //Called when button pressed
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateInterface();
+    }
+
+    //Called when apply button pressed
     public void addAlarm(View view) {
         Intent intent = new Intent(this, AlarmActivity.class);
         startActivity(intent);
@@ -39,10 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Called by AlarmActivity when done adding an alarm
     public void updateInterface() {
-        alarmManager.getNextAlarmClock();
+        alarms = db.getAllAlarms();
+        lv.setAdapter(new RowAdapter(this,alarms,alarms.size()));
     }
 
-    public AlarmManager getAlarmManager() {
-        return alarmManager;
-    }
 }

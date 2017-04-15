@@ -89,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery(selectAllQuery, null);
         if(cursor.moveToFirst()){
             do{
-                String alarm = " Name "+ cursor.getString(1)+"\n Time "+cursor.getString(2)+"\n Day "+cursor.getString(3);
+                String alarm = ""+ cursor.getString(1)+"\n"+cursor.getString(2)+"\n"+cursor.getString(3);
                 alarmList.add(alarm);
             }while(cursor.moveToNext());
         }
