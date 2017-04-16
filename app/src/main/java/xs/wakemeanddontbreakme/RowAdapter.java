@@ -57,6 +57,7 @@ public class RowAdapter extends BaseAdapter {
             alarmText.setText(db.getAllAlarms().get(position));
             alarmImage.setImageResource(R.drawable.alarm_icon);
         }
+
         return vi;
 
     }

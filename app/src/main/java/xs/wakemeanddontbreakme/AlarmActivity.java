@@ -7,11 +7,9 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
-
-
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -63,7 +61,12 @@ public class AlarmActivity extends AppCompatActivity {
         DatabaseHandler db = new DatabaseHandler(getApplicationContext());
         int order = db.getAllAlarms().size() + 1;
         String alarmName = "Alarm "+ order;
-        String alarmTime = alarmTimePicker.getHour()+":"+alarmTimePicker.getMinute();
+        String alarmTime;
+        if(alarmTimePicker.getMinute()<10){
+            alarmTime = alarmTimePicker.getHour()+":0"+alarmTimePicker.getMinute();
+        }else{
+            alarmTime = alarmTimePicker.getHour()+":"+alarmTimePicker.getMinute();
+        }
         String alarmDay = "";
         for(ToggleButton tb : toggledButtons()){
             alarmDay += tb.getTextOn()+" ";
@@ -76,6 +79,30 @@ public class AlarmActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getBroadcast(this, 0, receiverIntent, 0);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         finish();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+       String alarmInfo = getIntent().getStringExtra("ALARM_INFO");
+        if(alarmInfo != null) {
+            String[] alarmDetails = alarmInfo.split("\\r?\\n");
+            String alarmName = alarmDetails[0];
+            String alarmTime = alarmDetails[1];
+            if(alarmDetails.length == 3) {
+                String alarmDates = alarmDetails[2];
+            }
+          String[] timeSplit = alarmTime.split(":");
+            alarmTimePicker.setHour(Integer.parseInt(timeSplit[0]));
+            alarmTimePicker.setMinute(Integer.parseInt(timeSplit[1]));
+
+            //  String position = getIntent().getStringExtra("POSITION");
+            //   int i = Integer.parseInt(position) + 1;
+         //Toast.makeText(getApplicationContext(), "hello " + position+"|"+temp+"|", Toast.LENGTH_SHORT).show();
+        } else {
+
+        }
+
     }
 
     public void onCancelPress(View view) {

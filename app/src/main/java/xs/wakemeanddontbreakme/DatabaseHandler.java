@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 
 /**
@@ -17,9 +19,9 @@ public class DatabaseHandler extends SQLiteOpenHelper{
     private static final int DATABASE_VERSION = 1;
     // Database Name
     private static final String DATABASE_NAME = "alarmInfo";
-    // Contacts table name
+    // Alarm table name
     private static final String ALARMS = "alarms";
-    // Shops Table Columns names
+    // Alarm Table Columns names
     private static final String ALARM_ID = "id";
     private static final String ALARM_NAME = "name";
     private static final String ALARM_TIME = "time";
@@ -40,10 +42,10 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + ALARMS);
-// Creating tables again
-        onCreate(db);
+        if (newVersion > oldVersion) {
+            db.execSQL("DROP TABLE IF EXISTS " + ALARMS);
+            onCreate(db);
+        }
     }
 
     public void addAlarm(String alarmName, String alarmTime, String alarmDay){
@@ -71,16 +73,21 @@ public class DatabaseHandler extends SQLiteOpenHelper{
     }
 
     //Will be used
-    public String getAlarm(String alarmName, String alarmTime){
+    public String getAlarm(int index){
         String alarm = "";
+        String selectRowQuery = "SELECT * FROM "+ALARMS+" WHERE "+ ALARM_ID+"=?";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(ALARMS,new String[]{ALARM_NAME, ALARM_TIME, ALARM_DAY}, ALARM_NAME + "=? AND "+ ALARM_TIME +" = ?", new String[]{alarmName, alarmTime},null,null,null,null);
-        if(cursor != null){
-            cursor.moveToFirst();
-            alarm = " Name "+ cursor.getString(1)+"\n Time "+cursor.getString(2)+"\n Day "+cursor.getString(3);
+        Cursor cursor = db.rawQuery(selectRowQuery, null);
+        if(cursor.moveToFirst()){
+            do{
+                alarm = cursor.getString(1)+"\n"+cursor.getString(2)+"\n"+cursor.getString(3);
+            }while(cursor.moveToNext());
         }
         return alarm;
     }
+
+
+    //Fetches all the alarms
 
     public ArrayList<String> getAllAlarms(){
         ArrayList<String> alarmList = new ArrayList<>();
@@ -89,7 +96,7 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         Cursor cursor = db.rawQuery(selectAllQuery, null);
         if(cursor.moveToFirst()){
             do{
-                String alarm = ""+ cursor.getString(1)+"\n"+cursor.getString(2)+"\n"+cursor.getString(3);
+                String alarm = cursor.getString(1)+"\n"+cursor.getString(2)+"\n"+cursor.getString(3);
                 alarmList.add(alarm);
             }while(cursor.moveToNext());
         }

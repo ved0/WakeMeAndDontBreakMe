@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 import java.util.ArrayList;
 
 
@@ -23,6 +26,23 @@ public class MainActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         db = new DatabaseHandler(getApplicationContext());
         lv = (ListView) findViewById(R.id.alarm_list);
+        //makes the list clickable
+        lv.setOnItemClickListener(
+                new AdapterView.OnItemClickListener()
+                {
+                    @Override
+                    public void onItemClick(AdapterView<?> arg0, View view,
+                                            int position, long id) {
+                        TimePicker tp = (TimePicker) findViewById(R.id.timePicker);
+                        String alarm = db.getAllAlarms().get(position);
+                        Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
+                        intent.putExtra("POSITION", Integer.toString(position));
+                        //Toast.makeText(getApplicationContext(), "hello " + position + "|"+alarm+"|", Toast.LENGTH_SHORT).show();
+                        intent.putExtra("ALARM_INFO", alarm);
+                        startActivity(intent);
+                    }
+                }
+        );
 
         //rensa larmlistan
         //db.removeAllAlarms();
@@ -34,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         updateInterface();
     }
+
 
     //Called when apply button pressed
     public void addAlarm(View view) {

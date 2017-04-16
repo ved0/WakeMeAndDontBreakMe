@@ -8,7 +8,7 @@
     <TimePicker
         android:id="@+id/timePicker"
         android:layout_width="wrap_content"
-        android:layout_height="350dp"
+        android:layout_height="wrap_content"
         android:timePickerMode="spinner"
         android:layout_below="@+id/cancelButton"
         android:layout_marginTop="5dp"
@@ -21,11 +21,10 @@
         android:layout_height="40dp"
         android:textOff="@string/toggleMon"
         android:textOn="@string/toggleMon"
-        android:layout_marginLeft="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="250dp"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/vibration"
         />
     <ToggleButton
         android:id="@+id/Tue"
@@ -118,6 +117,58 @@
         android:onClick="onApplyPress"
         android:text="@string/Apply"
         tools:text="@string/Apply" />
+
+    <TextView
+        android:id="@+id/alarm_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/timePicker"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="12dp"
+        android:textSize="20dp"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif"
+        android:text="Alarm label" />
+
+
+
+    <TextView
+        android:id="@+id/vibration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/alarm_name"
+        android:layout_marginTop="10dp"
+        android:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="12dp"
+        android:textSize="20dp"
+        android:text="Vibration" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/timePicker"
+        android:layout_marginStart="10dp"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="12dp"
+        android:inputType="textPersonName"
+        android:text="Alarm" />
+
+    <Switch
+        android:id="@+id/switch2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/Sun"
+        android:layout_alignTop="@+id/vibration"
+        android:showText="true"
+        android:checked="true"
+        android:textOff="Off"
+        android:textOn="On"/>
 
 
 </RelativeLayout>
