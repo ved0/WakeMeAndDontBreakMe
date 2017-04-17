@@ -111,6 +111,7 @@ public class AlarmActivity extends AppCompatActivity {
             String alarmDay = "";
             for (ToggleButton tb : toggledButtons()) {
                 alarmDay += tb.getTextOn() + " ";
+
             }
             db.addAlarm(alarmName, alarmTime, alarmDay);
         }
