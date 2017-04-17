@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -24,7 +25,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Log.d("TAG", "BEFORE DB CREATE");
         db = new DatabaseHandler(getApplicationContext());
+        Log.d("TAG2", "AFTER DB CREATE");
+
         lv = (ListView) findViewById(R.id.alarm_list);
 
         //makes the list clickable

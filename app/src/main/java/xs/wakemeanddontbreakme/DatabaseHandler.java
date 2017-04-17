@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -22,18 +23,18 @@ import static xs.wakemeanddontbreakme.DBContract.DBEntry.TABLE_NAME;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "WakeMeDontBreakMe.db";
+    public static final String DATABASE_NAME = "WakeMeDontBreakMeDB";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     ALARM_ID + " INTEGER PRIMARY KEY," +
                     ALARM_NAME + " TEXT," +
-                    ALARM_TIME + " TEXT" +
-                    DBContract.DBEntry.ALARM_DATE + " TEXT)";
+                    ALARM_TIME + " TEXT," +
+                    ALARM_DATE + " TEXT" +
+            ")";
 
     private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + DBContract.DBEntry.TABLE_NAME;
-
+            "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,13 +42,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d("TAG3", SQL_CREATE_ENTRIES);
         db.execSQL(SQL_CREATE_ENTRIES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (newVersion > oldVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + DBContract.DBEntry.TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
             onCreate(db);
         }
     }
@@ -57,8 +59,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(ALARM_NAME, alarmName);
         values.put(ALARM_TIME, alarmTime);
-        values.put(DBContract.DBEntry.ALARM_DATE, alarmDate);
-        db.insert(DBContract.DBEntry.TABLE_NAME, null, values);
+        values.put(ALARM_DATE, alarmDate);
+        db.insert(TABLE_NAME, null, values);
         db.close();
     }
 
@@ -67,7 +69,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String selection = ALARM_ID + " LIKE ?";
         String[] selectionArgs = {Integer.toString(position)};
-        db.delete(DBContract.DBEntry.TABLE_NAME, selection, selectionArgs);
+        db.delete(TABLE_NAME, selection, selectionArgs);
         db.close();
     }
 
