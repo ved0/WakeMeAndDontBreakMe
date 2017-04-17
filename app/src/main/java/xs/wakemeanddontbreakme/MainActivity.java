@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         db = new DatabaseHandler(getApplicationContext());
         lv = (ListView) findViewById(R.id.alarm_list);
+
         //makes the list clickable
         lv.setOnItemClickListener(
                 new AdapterView.OnItemClickListener()
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
                         String alarm = db.getAllAlarms().get(position);
                         Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
                         intent.putExtra("POSITION", Integer.toString(position));
-                        //Toast.makeText(getApplicationContext(), "hello " + position + "|"+alarm+"|", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "hello " + position + "|"+alarm+"|", Toast.LENGTH_SHORT).show();
                         intent.putExtra("ALARM_INFO", alarm);
                         startActivity(intent);
                     }
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         //rensa larmlistan
-        db.removeAllAlarms();
+        //db.removeAllAlarms();
         updateInterface();
     }
 
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //Called by AlarmActivity when done adding an alarm
+    //Called when done adding/editing/removing an alarm
     public void updateInterface() {
         alarms = db.getAllAlarms();
         lv.setAdapter(new RowAdapter(this,alarms,alarms.size()));

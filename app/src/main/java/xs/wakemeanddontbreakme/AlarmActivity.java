@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -27,27 +28,29 @@ public class AlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
+
+
         Button deleteButton = (Button) findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(
-                new View.OnClickListener()
-                {
-                    public void onClick(View view)
-                    {
+                new View.OnClickListener() {
+                    public void onClick(View view) {
                         String position = getIntent().getStringExtra("POSITION");
-                        int i = Integer.parseInt(position)+1;
+                        int i = Integer.parseInt(position) + 1;
                         new DatabaseHandler(getApplicationContext()).removeAlarm(i);
                         Intent receiverIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), Integer.parseInt(position), receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                         alarmManager.cancel(pendingIntent);
-                       // Toast.makeText(AlarmActivity.this, " "+i, Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(AlarmActivity.this, " "+i, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 });
+
+
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
-    private ArrayList<ToggleButton> toggledButtons(){
+    private ArrayList<ToggleButton> toggledButtons() {
         ArrayList<ToggleButton> temp = new ArrayList<>();
         ArrayList<ToggleButton> toggledButtons = new ArrayList<>();
         ToggleButton toggleMon = (ToggleButton) findViewById(R.id.Mon);
@@ -64,8 +67,8 @@ public class AlarmActivity extends AppCompatActivity {
         temp.add(toggleSat);
         ToggleButton toggleSun = (ToggleButton) findViewById(R.id.Sun);
         temp.add(toggleSun);
-        for(ToggleButton tb : temp){
-            if(tb.isChecked()){
+        for (ToggleButton tb : temp) {
+            if (tb.isChecked()) {
                 toggledButtons.add(tb);
             }
         }
@@ -73,7 +76,7 @@ public class AlarmActivity extends AppCompatActivity {
     }
 
 
-    private String timeIfMinutesLessThanTen(String alarmTime){
+    private String timeIfMinutesLessThanTen(String alarmTime) {
         if (alarmTimePicker.getMinute() < 10) {
             alarmTime = alarmTimePicker.getHour() + ":0" + alarmTimePicker.getMinute();
         } else {
@@ -87,11 +90,11 @@ public class AlarmActivity extends AppCompatActivity {
         //Get selected time from time picker
 
         Calendar calendar = Calendar.getInstance();
-        if(doIchangeThisShit == true){
+        if (doIchangeThisShit == true) {
             calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getHour());
             calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
             String position = getIntent().getStringExtra("POSITION");
-            int i = Integer.parseInt(position)+1;
+            int i = Integer.parseInt(position) + 1;
             EditText et = (EditText) findViewById(R.id.alarm_get_name);
             String alarmName = et.getText().toString();
             String alarmTime = timeIfMinutesLessThanTen(new String());
@@ -99,9 +102,9 @@ public class AlarmActivity extends AppCompatActivity {
             for (ToggleButton tb : toggledButtons()) {
                 alarmDay += tb.getTextOn() + " ";
             }
-            db.changeRecord(i, alarmName, alarmTime, alarmDay);
+            db.editAlarm(i, alarmName, alarmTime, alarmDay);
             doIchangeThisShit = false;
-        }else {
+        } else {
             //Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getHour());
             calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
@@ -117,20 +120,20 @@ public class AlarmActivity extends AppCompatActivity {
         }
         //Create Intent to trigger on alarm
         Intent receiverIntent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, db.getAllAlarms().size()-1, receiverIntent, 0);
+        pendingIntent = PendingIntent.getBroadcast(this, db.getAllAlarms().size() - 1, receiverIntent, 0);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         finish();
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-       String alarmInfo = getIntent().getStringExtra("ALARM_INFO");
-        if(alarmInfo != null) {
+        String alarmInfo = getIntent().getStringExtra("ALARM_INFO");
+        if (alarmInfo != null) {
             String[] alarmDetails = alarmInfo.split("\\r?\\n");
             String alarmName = alarmDetails[0];
             String alarmTime = alarmDetails[1];
-            if(alarmDetails.length == 3) {
+            if (alarmDetails.length == 3) {
                 String alarmDates = alarmDetails[2];
             }
             Button deleteButton = (Button) findViewById(R.id.delete_button);
@@ -138,13 +141,12 @@ public class AlarmActivity extends AppCompatActivity {
             String[] timeSplit = alarmTime.split(":");
             alarmTimePicker.setHour(Integer.parseInt(timeSplit[0]));
             alarmTimePicker.setMinute(Integer.parseInt(timeSplit[1]));
-            ToggleButton toggleMon = (ToggleButton) findViewById(R.id.Mon);
             doIchangeThisShit = true;
 
             // Add toogle functionality for the days clicked !!
+            ToggleButton toggleMon = (ToggleButton) findViewById(R.id.Mon);
             toggleMon.setChecked(true);
 
-        // Toast.makeText(getApplicationContext(), "hello " + position+"|"+temp+"|", Toast.LENGTH_SHORT).show();
         } else {
 
         }
