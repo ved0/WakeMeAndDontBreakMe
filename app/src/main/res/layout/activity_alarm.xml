@@ -147,7 +147,7 @@
         android:text="Vibration" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/alarm_get_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/timePicker"
@@ -169,6 +169,16 @@
         android:checked="true"
         android:textOff="Off"
         android:textOn="On"/>
+
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:text="Delete alarm"
+        android:layout_below="@+id/Wed"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

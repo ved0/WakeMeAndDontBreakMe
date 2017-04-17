@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         );
 
         //rensa larmlistan
-        //db.removeAllAlarms();
+        db.removeAllAlarms();
         updateInterface();
     }
 

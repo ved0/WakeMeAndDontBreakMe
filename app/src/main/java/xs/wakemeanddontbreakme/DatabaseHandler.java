@@ -59,10 +59,11 @@ public class DatabaseHandler extends SQLiteOpenHelper{
     }
 
     //Will be used
-    public void removeAlarm(String alarmName, String alarmTime){
+    public void removeAlarm(int position){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(ALARMS, ALARM_NAME + " = ? AND "+ ALARM_TIME + " = ?",new String[]{alarmName,alarmTime});
+          db.delete(ALARMS, ALARM_ID +"="+ position,null);
         db.close();
+
     }
 
     //Will be used
@@ -74,8 +75,8 @@ public class DatabaseHandler extends SQLiteOpenHelper{
 
     //Will be used
     public String getAlarm(int index){
-        String alarm = "";
-        String selectRowQuery = "SELECT * FROM "+ALARMS+" WHERE "+ ALARM_ID+"=?";
+        String alarm = new String();
+        String selectRowQuery = "SELECT * FROM "+ALARMS+" WHERE "+ALARM_ID + "="+index;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectRowQuery, null);
         if(cursor.moveToFirst()){
@@ -86,6 +87,16 @@ public class DatabaseHandler extends SQLiteOpenHelper{
         return alarm;
     }
 
+
+    public void changeRecord(int position, String alarmName, String alarmTime, String alarmDay){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ALARM_ID, position);
+        values.put(ALARM_NAME, alarmName);
+        values.put(ALARM_TIME, alarmTime);
+        values.put(ALARM_DAY, alarmDay);
+        db.update(ALARMS,values, ALARM_ID +"=" + position,null);
+    }
 
     //Fetches all the alarms
 
