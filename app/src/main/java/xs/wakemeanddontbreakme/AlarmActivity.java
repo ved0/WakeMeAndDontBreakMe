@@ -95,7 +95,7 @@ public class AlarmActivity extends AppCompatActivity {
             calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
             String position = getIntent().getStringExtra("POSITION");
             int i = Integer.parseInt(position) + 1;
-            EditText et = (EditText) findViewById(R.id.alarm_get_name);
+            EditText et = (EditText) findViewById(R.id.getAlarmName);
             String alarmName = et.getText().toString();
             String alarmTime = timeIfMinutesLessThanTen(new String());
             String alarmDay = "";
@@ -108,7 +108,7 @@ public class AlarmActivity extends AppCompatActivity {
             //Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getHour());
             calendar.set(Calendar.MINUTE, alarmTimePicker.getMinute());
-            EditText et = (EditText) findViewById(R.id.alarm_get_name);
+            EditText et = (EditText) findViewById(R.id.getAlarmName);
             String alarmName = et.getText().toString();
             String alarmTime = timeIfMinutesLessThanTen(new String());
             String alarmDay = "";

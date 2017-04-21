@@ -147,7 +147,7 @@
         android:text="Vibration" />
 
     <EditText
-        android:id="@+id/alarm_get_name"
+        android:id="@+id/getAlarmName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/timePicker"

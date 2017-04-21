@@ -16,4 +16,5 @@
     <string name="Cancel">Cancel</string>
     <string name="Apply">Apply</string>
     <string name="AddAlarm">Add</string>
+    <string name="alarm_get_name">Alarm</string>
 </resources>
