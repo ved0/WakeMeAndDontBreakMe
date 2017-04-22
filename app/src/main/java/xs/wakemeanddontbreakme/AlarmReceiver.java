@@ -26,7 +26,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent i = new Intent(context, TestTask.class);
+        Intent i = new Intent(context, LockTask.class);
         context.startActivity(i);
     }
 }

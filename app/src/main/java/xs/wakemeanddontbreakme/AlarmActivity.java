@@ -118,6 +118,7 @@ public class AlarmActivity extends AppCompatActivity {
             }
             db.addAlarm(alarmName, alarmTime, alarmDay);
         }
+
         //Create Intent to trigger on alarm
         Intent receiverIntent = new Intent(this, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, db.getAllAlarms().size() - 1, receiverIntent, 0);
