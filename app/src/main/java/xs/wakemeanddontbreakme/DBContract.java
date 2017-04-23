@@ -18,5 +18,7 @@ public final class DBContract {
         public static final String ALARM_NAME = "name";
         public static final String ALARM_TIME = "time";
         public static final String ALARM_DATE = "date";
+        public static final String ALARM_DATE_ID ="date_id";
+        public static final String ALARM_POSITION = "position";
     }
 }

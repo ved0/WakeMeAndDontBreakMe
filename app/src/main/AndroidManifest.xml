@@ -28,7 +28,6 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" />
-
         <receiver android:name=".AlarmReceiver" />
 
         <activity android:name=".TestTask" />

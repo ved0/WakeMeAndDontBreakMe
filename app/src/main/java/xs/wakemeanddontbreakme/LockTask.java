@@ -109,7 +109,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
             realPassword.concat(" ");
             realPassword.concat(Integer.toString(rNum));
         }
-        AlertDialog passDialogue = new AlertDialog();
+      //  AlertDialog passDialogue = new AlertDialog();
     }
 
     private void setUpRingtoneAndVibration() {

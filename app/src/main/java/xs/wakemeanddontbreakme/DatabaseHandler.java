@@ -6,13 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DATE;
+import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DATE_ID;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_ID;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_NAME;
+import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_POSITION;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_TIME;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.TABLE_NAME;
 
@@ -30,8 +30,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     ALARM_ID + " INTEGER PRIMARY KEY," +
                     ALARM_NAME + " TEXT," +
                     ALARM_TIME + " TEXT," +
-                    ALARM_DATE + " TEXT" +
-            ")";
+                    ALARM_DATE + " TEXT," +
+                    ALARM_POSITION + " INTEGER," +
+                    ALARM_DATE_ID + " TEXT" +
+                    ")";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -64,13 +66,47 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    //Protected vs SQL-injections
-    public void removeAlarm(int position) {
+
+    public void removeAlarm(String alarmName, String alarmTime) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String selection = ALARM_ID + " LIKE ?";
-        String[] selectionArgs = {Integer.toString(position)};
+        String selection = ALARM_NAME + " LIKE ? AND " + ALARM_TIME + " LIKE ?";
+        String[] selectionArgs = {alarmName, alarmTime};
         db.delete(TABLE_NAME, selection, selectionArgs);
         db.close();
+    }
+
+    public void addAlarmPosition(String alarmName, String alarmTime, int position) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ALARM_POSITION, position);
+        String selection = ALARM_NAME + " LIKE ? AND " + ALARM_TIME + " LIKE ?";
+        String[] selectionArgs = {alarmName, alarmTime};
+        db.update(TABLE_NAME, values, selection, selectionArgs);
+        db.close();
+    }
+
+    public void addAlarmDateID(String alarmName, String alarmTime, String alarmDateId) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ALARM_DATE_ID, alarmDateId);
+        String selection = ALARM_NAME + " LIKE ? AND " + ALARM_TIME + " LIKE ?";
+        String[] selectionArgs = {alarmName, alarmTime};
+        db.update(TABLE_NAME, values, selection, selectionArgs);
+        db.close();
+    }
+
+    public String getAlarmDateID(String alarmName, String alarmTime) {
+        String selectRowQuery = "SELECT * FROM " + TABLE_NAME + " WHERE " + ALARM_NAME + " LIKE ? AND " + ALARM_TIME + " LIKE ?";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String s = "";
+        String[] eii = {alarmName, alarmTime};
+        Cursor cursor = db.rawQuery(selectRowQuery, eii);
+        if (cursor.moveToFirst()) {
+            do {
+                s = cursor.getString(5);
+            } while (cursor.moveToNext());
+        }
+        return s;
     }
 
     //Will be used
@@ -79,31 +115,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_ENTRIES);
     }
 
-    //Will be used
-    public String getAlarm(int index) {
-        String alarm = new String();
-        String selectRowQuery = "SELECT * FROM " + TABLE_NAME + " WHERE " + ALARM_ID + "=" + index;
+    public int getAlarmPosition(String alarmName, String alarmTime) {
+        String selectRowQuery = "SELECT * FROM " + TABLE_NAME + " WHERE " + ALARM_NAME + " LIKE ? AND " + ALARM_TIME + " LIKE ?";
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectRowQuery, null);
+        int i = 0;
+        String[] eii = {alarmName, alarmTime};
+        Cursor cursor = db.rawQuery(selectRowQuery, eii);
         if (cursor.moveToFirst()) {
             do {
-                alarm = cursor.getString(1) + "\n" + cursor.getString(2) + "\n" + cursor.getString(3);
+                i = cursor.getInt(4);
             } while (cursor.moveToNext());
         }
-        return alarm;
+        return i;
     }
 
-    //Protected vs SQL-injections
-    public void editAlarm(int position, String alarmName, String alarmTime, String alarmDate) {
+
+    public void changeRecord(String oldName, String oldTime, String alarmName, String alarmTime, String alarmDay) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ALARM_NAME, alarmName);
         values.put(ALARM_TIME, alarmTime);
-        values.put(ALARM_DATE, alarmDate);
-
-        String selection = ALARM_ID + " LIKE ?";
-        String[] selectionArgs = {Integer.toString(position)};
+        values.put(ALARM_DATE, alarmDay);
+        String selection = ALARM_NAME + " LIKE ? AND " + ALARM_TIME + " LIKE ?";
+        String[] selectionArgs = {oldName, oldTime};
         db.update(TABLE_NAME, values, selection, selectionArgs);
+        db.close();
     }
 
     //Fetches all the alarms

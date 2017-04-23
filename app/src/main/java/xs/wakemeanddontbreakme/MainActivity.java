@@ -2,14 +2,13 @@ package xs.wakemeanddontbreakme;
 
 import android.app.AlarmManager;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TimePicker;
-import android.widget.Toast;
+import android.widget.TextView;
 import java.util.ArrayList;
 
 
@@ -33,16 +32,15 @@ public class MainActivity extends AppCompatActivity {
 
         //makes the list clickable
         lv.setOnItemClickListener(
-                new AdapterView.OnItemClickListener()
-                {
+                new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> arg0, View view,
                                             int position, long id) {
-                        TimePicker tp = (TimePicker) findViewById(R.id.timePicker);
-                        String alarm = db.getAllAlarms().get(position);
+                        TextView tv = (TextView) view.findViewById(R.id.alarmText);
+                        String alarm = tv.getText().toString();
                         Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
                         intent.putExtra("POSITION", Integer.toString(position));
-                        Toast.makeText(getApplicationContext(), "hello " + position + "|"+alarm+"|", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "hello " + position + "|"+alarmDetails+"|"+alarm+"|", Toast.LENGTH_SHORT).show();
                         intent.putExtra("ALARM_INFO", alarm);
                         startActivity(intent);
                     }
@@ -70,7 +68,16 @@ public class MainActivity extends AppCompatActivity {
     //Called when done adding/editing/removing an alarm
     public void updateInterface() {
         alarms = db.getAllAlarms();
-        lv.setAdapter(new RowAdapter(this,alarms,alarms.size()));
+        lv.setAdapter(new RowAdapter(this, alarms, alarms.size()));
     }
 
+
+    public void getMeBack(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void notImplemented(View view){
+    setContentView(R.layout.activity_need_implementation);
+    }
 }

@@ -51,9 +51,9 @@ public class RowAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.alarm_row, null);
         }
         DatabaseHandler db = new DatabaseHandler(context);
-        for(String s: db.getAllAlarms()){
-        TextView alarmText = (TextView) vi.findViewById(R.id.alarmText);
-        ImageView alarmImage = (ImageView) vi.findViewById(R.id.alarmImage);
+        for (String s : db.getAllAlarms()) {
+            TextView alarmText = (TextView) vi.findViewById(R.id.alarmText);
+            ImageView alarmImage = (ImageView) vi.findViewById(R.id.alarmImage);
             alarmText.setText(db.getAllAlarms().get(position));
             alarmImage.setImageResource(R.drawable.alarm_icon);
         }
@@ -61,4 +61,5 @@ public class RowAdapter extends BaseAdapter {
         return vi;
 
     }
+
 }
