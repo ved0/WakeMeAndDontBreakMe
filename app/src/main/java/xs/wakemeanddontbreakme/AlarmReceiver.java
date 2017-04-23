@@ -8,6 +8,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import java.util.Random;
+
 /**
  * Created by James on 11/04/2017.
  */
@@ -26,8 +28,19 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent i = new Intent(context, LockTask.class);
-        context.startActivity(i);
+        int rand = randInt(1, 2);
+        if (rand == 1) {
+            Intent i = new Intent(context, LockTask.class);
+            context.startActivity(i);
+        }else if (rand == 2){
+            Intent i = new Intent(context, ShakeEventListener.class);
+            context.startActivity(i);
+        }
+    }
+    public static int randInt(int min, int max) {
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        return randomNum;
     }
 }
 

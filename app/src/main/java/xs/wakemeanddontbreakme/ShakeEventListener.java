@@ -1,17 +1,30 @@
 package xs.wakemeanddontbreakme;
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Vibrator;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 
 /**
  * Created by carltidelius on 2017-04-15.
  */
 
-public class ShakeEventListener implements SensorEventListener {
-    private boolean hasShakedEnough = false;
+public class ShakeEventListener extends AppCompatActivity implements SensorEventListener {
 
+    Ringtone ringtone;
+    Vibrator vibrator;
+    long[] vibrationPattern = {0, 1000, 1000};
+    private SensorManager mSensorManager;
+    private ShakeEventListener mSensorListener;
     /** Minimum movement force to consider. */
     private static final int MIN_FORCE = 10;
 
@@ -129,6 +142,59 @@ public class ShakeEventListener implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.shake_event_task);
+        //Run private method to setup ringtone and vibrator
+        ringtone.play();
+        vibrator.vibrate(vibrationPattern, 0);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorListener = new ShakeEventListener();
+        setUpRingtoneAndVibration();
+        mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
+            @Override
+            public void onShake() {
+                    if (mDirectionChangeCount >= 15) {
+                        finish();
+                        ringtone.stop();
+                        vibrator.cancel();
+                    }
 
+            }
+        });
+
+    }
+    private void setUpRingtoneAndVibration() {
+        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        }
+        ringtone = RingtoneManager.getRingtone(this.getApplicationContext(), alarmUri);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(mSensorListener,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_UI);
+   }
+
+    @Override
+    protected void onPause() {
+        mSensorManager.unregisterListener(mSensorListener);
+        super.onPause();
+    }
+    public void onDismissPress(View view) {
+        finish();
+        ringtone.stop();
+        vibrator.cancel();
+    }
+    @Override
+    protected void onStop(){
+        mSensorManager.unregisterListener(mSensorListener);
+        super.onStop();
+    }
 
 }
