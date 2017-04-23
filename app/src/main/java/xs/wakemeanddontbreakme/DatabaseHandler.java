@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import java.util.ArrayList;
 
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DATE;
@@ -142,6 +143,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+
+    public int lastAlarmPosition() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + ALARM_POSITION + " DESC";
+        int temp = 0;
+        Cursor cursor = db.rawQuery(sqlQuery, null);
+        if (cursor.moveToFirst()) {
+            temp = cursor.getInt(4) + 1;
+        }
+        return temp;
+    }
     //Fetches all the alarms
 
     public ArrayList<String> getAllAlarms() {

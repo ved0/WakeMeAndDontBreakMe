@@ -31,7 +31,6 @@
         android:layout_weight="1"
         android:showText="true"
         android:checked="true"
-        android:onClick="notImplemented"
         android:layout_marginRight="15dp"
         android:textOff="Off"
         android:textOn="On" />
