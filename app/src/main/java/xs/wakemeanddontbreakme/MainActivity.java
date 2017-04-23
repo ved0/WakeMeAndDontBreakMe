@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void notImplemented(View view){
-    setContentView(R.layout.activity_need_implementation);
-    }
+//    public void notImplemented(View view){
+//        setContentView(R.layout.activity_need_implementation);
+//    }
 }

@@ -1,6 +1,7 @@
 package xs.wakemeanddontbreakme;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,6 +13,7 @@ import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LockTask extends AppCompatActivity implements SensorEventListener {
     Ringtone ringtone;
@@ -27,7 +30,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
 
     private ImageView lock;
-    private TextView xText, pass;
+    private TextView xText, passText;
     private SensorManager mSensorManager;
     private Sensor mOrientation;
 
@@ -48,14 +51,14 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         lock = (ImageView) findViewById(R.id.lock_image);
         xText = (TextView) findViewById(R.id.x_text);
         xText.setCursorVisible(false);
-        pass = (TextView) findViewById(R.id.passcode_text);
-        pass.setCursorVisible(false);
+        passText = (TextView) findViewById(R.id.passcode_text);
+        passText.setCursorVisible(false);
         password = "";
 
         //Run private method to setup ringtone and vibrator
-//        setUpRingtoneAndVibration()
-//        ringtone.play();
-//        vibrator.vibrate(vibrationPattern, 0);
+        setUpRingtoneAndVibration();
+        ringtone.play();
+        vibrator.vibrate(vibrationPattern, 0);
 
         //Run password randomizer
         randomizePass();
@@ -76,40 +79,80 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         mCurrentDegree = x;
 
         //Display "fake" value to match lock image
-        fakeVal = (360 - x) * 2.77;
+        fakeVal = roundDown((360 - x) * 2.77);
         xText.setText("Value : " + (int) fakeVal + "");
     }
 
+    private int roundDown(double val) {
+        int roundedVal = (int) val/10;
+        roundedVal *= 10;
+        return roundedVal;
+    }
+
     public void onEnterPress(View view) {
-        if (counter < 3) {
-            password = password.concat(" ");
-            password = password.concat(Integer.toString((int)fakeVal));
-            pass.setText("PASS: " + password);
-            counter++;
-        } else {
+        counter++;
+        password = password.concat(" ");
+        password = password.concat(Integer.toString((int) fakeVal));
+        passText.setText("PASS: " + password);
+        if (counter == 3) {
             enterPassword(password);
             password = "";
         }
     }
 
     public void onDismissPress(View view) {
-        finish();
+        dismissAlarm();
+    }
+
+    private void dismissAlarm() {
         ringtone.stop();
         vibrator.cancel();
+        super.onStop();
+        mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
+        finish();
     }
 
     private void enterPassword(String pw) {
-
+        if (pw.equals(realPassword)) {
+            dismissAlarm();
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("The entered passcode was incorrect");
+            builder.setCancelable(false);
+            builder.setTitle("Sorry");
+            builder.setPositiveButton("Try again", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    counter = 0;
+                    passText.setText("");
+                    randomizePass();
+                }
+            });
+            builder.setIcon(android.R.drawable.ic_dialog_alert);
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
     private void randomizePass() {
-        Random r = new Random();
+        StringBuilder sb = new StringBuilder(15);
         for (int i = 0; i < 3; i++) {
-            int rNum = r.nextInt(999);
-            realPassword.concat(" ");
-            realPassword.concat(Integer.toString(rNum));
+            int rNum = ThreadLocalRandom.current().nextInt(0, 999 + 1);
+            rNum = roundDown(rNum);
+            sb.append(" ").append(Integer.toString(rNum));
         }
-      //  AlertDialog passDialogue = new AlertDialog();
+        realPassword = sb.toString();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("The passcode is: " + sb.toString());
+        builder.setCancelable(false);
+        builder.setTitle("ATTENTION");
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void setUpRingtoneAndVibration() {
@@ -137,13 +180,13 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     @Override
     protected void onPause() {
         super.onPause();
-        mSensorManager.unregisterListener(this);
+        mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
     }
 
     @Override
     protected void onStop() {
         // Unregister the listener
         super.onStop();
-        mSensorManager.unregisterListener(this);
+        mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
     }
 }
