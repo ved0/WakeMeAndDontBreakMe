@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
@@ -28,9 +29,13 @@ public class AlarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
         db = new DatabaseHandler(this);
-        int temp = db.getAllAlarms().size()+1;
+        int temp = db.lastAlarmPosition();
         EditText et = (EditText) findViewById(R.id.getAlarmName);
-        et.setText("Alarm "+temp);
+        if (temp == 0) {
+            et.setText("Alarm " + 1);
+        } else {
+            et.setText("Alarm " + (temp));
+        }
         Button deleteButton = (Button) findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -190,15 +195,15 @@ public class AlarmActivity extends AppCompatActivity {
             for (int i : toggleOrderId()) {
                 alarmId += i + ":";
             }
-            //lägger till referensen för att kunna stänga av rätt larm i alarmManagern
             db.addAlarmDateID(alarmName, alarmTime, alarmId);
         }
-        db.addAlarmPosition(alarmName, alarmTime, db.getAllAlarms().size() - 1);
-
-        //Toast.makeText(this, "" + new DatabaseHandler(getApplicationContext()).getAlarmDateID(alarmName, alarmTime) + "|", Toast.LENGTH_SHORT).show();
+        int i = db.lastAlarmPosition();
+        //lägger till referensen för att kunna stänga av rätt larm i alarmManagern
+        db.addAlarmPosition(alarmName, alarmTime, i);
+        // Toast.makeText(this, "|" + i + "|", Toast.LENGTH_SHORT).show();
         //Create Intent to trigger on alarm
         Intent receiverIntent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, db.getAllAlarms().size() - 1, receiverIntent, 0);
+        pendingIntent = PendingIntent.getBroadcast(this, i, receiverIntent, 0);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         finish();
     }
