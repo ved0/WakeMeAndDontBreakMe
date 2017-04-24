@@ -31,9 +31,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         int rand = randInt(1, 2);
         if (rand == 1) {
             Intent i = new Intent(context, LockTask.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
         }else if (rand == 2){
             Intent i = new Intent(context, ShakeEventListener.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
         }
     }
