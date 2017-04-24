@@ -203,6 +203,7 @@ public class AlarmActivity extends AppCompatActivity {
                 alarmId += i + ":";
             }
             db.addAlarmDateID(alarmName, alarmTime, alarmId);
+            amIchanged = true;
         }
         if (amIchanged) {
             int i = db.lastAlarmPosition();
