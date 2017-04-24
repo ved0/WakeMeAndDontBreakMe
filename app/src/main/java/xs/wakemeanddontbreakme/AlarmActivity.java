@@ -20,6 +20,7 @@ import java.util.Calendar;
 public class AlarmActivity extends AppCompatActivity {
     AlarmManager alarmManager;
     TimePicker alarmTimePicker;
+    private boolean amIchanged;
     DatabaseHandler db;
     PendingIntent pendingIntent;
     private boolean doIchangeThisShit = false;
@@ -28,6 +29,7 @@ public class AlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
+        amIchanged = false;
         db = new DatabaseHandler(this);
         int temp = db.lastAlarmPosition();
         EditText et = (EditText) findViewById(R.id.getAlarmName);
@@ -172,6 +174,11 @@ public class AlarmActivity extends AppCompatActivity {
             String oldName = alarmDetails[0];
             String oldTime = alarmDetails[1];
             db.changeRecord(oldName, oldTime, alarmName, alarmTime, alarmDay);
+            if(oldName==alarmName && oldTime == alarmTime){
+                amIchanged = false;
+            }else{
+                amIchanged = true;
+            }
             String alarmId = "";
             for (int i : toggleOrderId()) {
                 alarmId += i + ":";
@@ -197,14 +204,16 @@ public class AlarmActivity extends AppCompatActivity {
             }
             db.addAlarmDateID(alarmName, alarmTime, alarmId);
         }
-        int i = db.lastAlarmPosition();
-        //lägger till referensen för att kunna stänga av rätt larm i alarmManagern
-        db.addAlarmPosition(alarmName, alarmTime, i);
-        // Toast.makeText(this, "|" + i + "|", Toast.LENGTH_SHORT).show();
-        //Create Intent to trigger on alarm
-        Intent receiverIntent = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, i, receiverIntent, 0);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        if (amIchanged) {
+            int i = db.lastAlarmPosition();
+            //lägger till referensen för att kunna stänga av rätt larm i alarmManagern
+            db.addAlarmPosition(alarmName, alarmTime, i);
+            // Toast.makeText(this, "|" + i + "|", Toast.LENGTH_SHORT).show();
+            //Create Intent to trigger on alarm
+            Intent receiverIntent = new Intent(this, AlarmReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(this, i, receiverIntent, 0);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
         finish();
     }
 
