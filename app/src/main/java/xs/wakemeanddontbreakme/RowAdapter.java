@@ -65,39 +65,37 @@ public class RowAdapter extends BaseAdapter {
         db = new DatabaseHandler(context);
         for (String s : db.getAllAlarms()) {
             final TextView alarmText = (TextView) vi.findViewById(R.id.alarmText);
-            ImageView alarmImage = (ImageView) vi.findViewById(R.id.alarmImage);
             alarmText.setText(db.getAllAlarms().get(position));
-            alarmImage.setImageResource(R.drawable.alarm_icon);
-            final int pos = position;
             Switch sw = (Switch) vi.findViewById(R.id.switch1);
-            sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton cb, boolean on){
+                public void onCheckedChanged(CompoundButton cb, boolean on) {
                     AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-                    if(on)
-                    {
-                        String [] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
-                        int i = db.getAlarmPosition(alarmInfo[0],alarmInfo[1]);
+                    if (on) {
+                        String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
+                        int lastPos = db.getLastAlarmPosition();
                         Calendar calendar = Calendar.getInstance();
-                        String [] alarmTime = alarmInfo[1].split(":");
+                        String[] alarmTime = alarmInfo[1].split(":");
                         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(alarmTime[0]));
                         calendar.set(Calendar.MINUTE, Integer.parseInt(alarmTime[1]));
                         Intent receiverIntent = new Intent(context, AlarmReceiver.class);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, i, receiverIntent, 0);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, lastPos + 1, receiverIntent, 0);
                         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
-                        // add functionality
-                       // Toast.makeText(context, " I am on "+ alarmText.getText().toString(), Toast.LENGTH_LONG).show();
-                    }
-                    else
-                    {
-                        String [] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
-                        int i = db.getAlarmPosition(alarmInfo[0],alarmInfo[1]);
+                        long timeInMillis = calendar.getTimeInMillis();
+                        if (timeInMillis > System.currentTimeMillis()) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                        } else {
+                            timeInMillis += AlarmManager.INTERVAL_DAY;
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                        }
+                        Toast.makeText(context, alarmInfo[0] + " has been enabled", Toast.LENGTH_LONG).show();
+                    } else {
+                        String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
+                        int currentAlarmPosition = db.getCurrentAlarmPosition(alarmInfo[0]);
                         Intent receiverIntent = new Intent(context, AlarmReceiver.class);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, i, receiverIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, currentAlarmPosition, receiverIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                         alarmManager.cancel(pendingIntent);
-                        //add functionality
-                       // Toast.makeText(context, " I am off "+ pos, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, alarmInfo[0] + " has been disabled", Toast.LENGTH_LONG).show();
                     }
                 }
             });

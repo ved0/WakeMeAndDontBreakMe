@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,174 +12,167 @@
         android:layout_height="wrap_content"
         android:timePickerMode="spinner"
         android:layout_below="@+id/cancelButton"
-        android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="68dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
     </TimePicker>
-
-    <ToggleButton
-        android:id="@+id/Mon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:textOff="@string/toggleMon"
-        android:textOn="@string/toggleMon"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="12dp"
-        android:layout_below="@+id/vibration"
-        />
-    <ToggleButton
-        android:id="@+id/Tue"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:textOff="@string/toggleTue"
-        android:textOn="@string/toggleTue"
-        android:layout_alignTop="@+id/Mon"
-        android:layout_toRightOf="@+id/Mon"
-        android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp"
-        />
-    <ToggleButton
-        android:id="@+id/Wed"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:textOff="@string/toggleWed"
-        android:textOn="@string/toggleWed"
-        android:layout_alignTop="@+id/Mon"
-        android:layout_toRightOf="@+id/Tue"
-        android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp"
-  />
-    <ToggleButton
-        android:id="@+id/Thu"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:textOff="@string/toggleThu"
-        android:textOn="@string/toggleThu"
-        android:layout_alignTop="@+id/Mon"
-        android:layout_toRightOf="@+id/Wed"
-        android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp"
-        />
-
-    <ToggleButton
-        android:id="@+id/Fri"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:textOff="@string/toggleFri"
-        android:textOn="@string/toggleFri"
-        android:layout_alignTop="@+id/Mon"
-        android:layout_toRightOf="@+id/Thu"
-        android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp"
- />
-
-    <ToggleButton
-        android:id="@+id/Sat"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:textOff="@string/toggleSat"
-        android:textOn="@string/toggleSat"
-        android:layout_alignTop="@+id/Mon"
-        android:layout_toRightOf="@+id/Fri"
-        android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp"
- />
-
-    <ToggleButton
-        android:id="@+id/Sun"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:textOff="@string/toggleSun"
-        android:textOn="@string/toggleSun"
-        android:layout_alignTop="@+id/Mon"
-        android:layout_toRightOf="@+id/Sat"
- />
 
     <Button
         android:id="@+id/cancelButton"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="180dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="-4dp"
         android:onClick="onCancelPress"
         android:text="@string/Cancel"
-        tools:text="@string/Cancel" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/Cancel"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="3dp" />
 
     <Button
         android:id="@+id/applyButton"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="180dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:onClick="onApplyPress"
         android:text="@string/Apply"
-        tools:text="@string/Apply" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/Apply"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
-        android:id="@+id/alarm_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/nameText"
+        android:layout_width="65dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/timePicker"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="12dp"
-        android:textSize="20dp"
-        android:layout_marginTop="30dp"
-        android:textStyle="bold"
+        android:layout_marginBottom="312dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:fontFamily="sans-serif"
-        android:text="Alarm label" />
-
-
-
-    <TextView
-        android:id="@+id/vibration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/alarm_name"
-        android:layout_marginTop="10dp"
-        android:fontFamily="sans-serif"
-        android:textStyle="bold"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="12dp"
+        android:text="Name"
         android:textSize="20dp"
-        android:text="Vibration" />
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/getAlarmName"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
 
     <EditText
         android:id="@+id/getAlarmName"
+        android:layout_width="214dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/nameText"
+        android:layout_marginBottom="310dp"
+        android:layout_marginRight="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Alarm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="16dp" />
+
+    <TextView
+        android:id="@+id/vibrationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/timePicker"
-        android:layout_marginStart="10dp"
-        android:layout_alignParentRight="true"
-        android:ems="10"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="12dp"
-        android:inputType="textPersonName"
-        android:text="Alarm" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/nameText"
+        android:layout_marginBottom="267dp"
+        android:layout_marginLeft="16dp"
+        android:fontFamily="sans-serif"
+        android:text="Vibration"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="16dp" />
 
     <Switch
-        android:id="@+id/switch2"
+        android:id="@+id/vibrationSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/Sun"
-        android:layout_alignTop="@+id/vibration"
-        android:showText="true"
+        android:layout_alignTop="@+id/vibrationText"
+        android:layout_marginBottom="265dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:checked="true"
-        android:textOff="Off"
-        android:textOn="On"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.968"
+        app:layout_constraintLeft_toRightOf="@+id/vibrationText"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/difficultyText"
+        android:layout_width="90dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/timePicker"
+        android:layout_marginBottom="205dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:fontFamily="sans-serif"
+        android:text="Difficulty"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.106"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/getAlarmName"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <Spinner
+        android:id="@+id/difficultySpinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="216dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.967"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <Button
-        android:id="@+id/delete_button"
+        android:id="@+id/deleteButton"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:text="Delete alarm"
         android:layout_below="@+id/Wed"
+        android:layout_centerHorizontal="true"
+        android:onClick="onDeletePress"
+        android:text="Delete alarm"
         android:visibility="invisible"
-        android:layout_centerHorizontal="true" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.497" />
 
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

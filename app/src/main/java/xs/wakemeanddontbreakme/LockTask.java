@@ -54,14 +54,11 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         passText = (TextView) findViewById(R.id.passcode_text);
         passText.setCursorVisible(false);
         password = "";
-
-        //Run private method to setup ringtone and vibrator
-        setUpRingtoneAndVibration();
-        ringtone.play();
-        vibrator.vibrate(vibrationPattern, 0);
-
-        //Run password randomizer
+        //Run password randomise
         randomizePass();
+        //Run private method to setup ringtone and vibrator
+        Bundle extras = getIntent().getExtras();
+        setUpRingtoneAndVibration(extras.getInt("vibration"));
     }
 
     @Override
@@ -81,12 +78,6 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         //Display "fake" value to match lock image
         fakeVal = roundDown((360 - x) * 2.77);
         xText.setText("Value : " + (int) fakeVal + "");
-    }
-
-    private int roundDown(double val) {
-        int roundedVal = (int) val/10;
-        roundedVal *= 10;
-        return roundedVal;
     }
 
     public void onEnterPress(View view) {
@@ -155,26 +146,33 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         alert.show();
     }
 
-    private void setUpRingtoneAndVibration() {
+    private void setUpRingtoneAndVibration(int vibration) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if (alarmUri == null) {
             alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         }
         ringtone = RingtoneManager.getRingtone(this.getApplicationContext(), alarmUri);
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        ringtone.play();
+        if (vibration == 1) {
+            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(vibrationPattern, 0);
+        }
+    }
+
+    private int roundDown(double val) {
+        int roundedVal = (int) val/10;
+        roundedVal *= 10;
+        return roundedVal;
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }
+    public void onAccuracyChanged(Sensor sensor, int i) {}
 
     @Override
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
                 SensorManager.SENSOR_DELAY_GAME);
-
     }
 
     @Override
@@ -185,8 +183,12 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     @Override
     protected void onStop() {
-        // Unregister the listener
         super.onStop();
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
+    }
+
+    @Override
+    public void onBackPressed() {
+        return;
     }
 }

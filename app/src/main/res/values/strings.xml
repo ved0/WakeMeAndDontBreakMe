@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WakeMeAndDontBreakMe</string>
+    <string name="app_name">WakeMeDon\'tBreakMe</string>
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
@@ -17,4 +17,10 @@
     <string name="Apply">Apply</string>
     <string name="AddAlarm">Add</string>
     <string name="alarm_get_name">Alarm</string>
+
+    <string-array name="difficulties">
+        <item>Hard</item>
+        <item>Harder</item>
+        <item>NO FEAR</item>
+    </string-array>
 </resources>

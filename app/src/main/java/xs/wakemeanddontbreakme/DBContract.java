@@ -14,11 +14,11 @@ public final class DBContract {
     /* Inner class that defines the table contents */
     public static class DBEntry implements BaseColumns {
         public static final String TABLE_NAME = "alarms";
-        public static final String ALARM_ID = "ID";
         public static final String ALARM_NAME = "name";
         public static final String ALARM_TIME = "time";
-        public static final String ALARM_DATE = "date";
-        public static final String ALARM_DATE_ID ="date_id";
+        public static final String ALARM_DAYS ="days";
         public static final String ALARM_POSITION = "position";
+        public static final String ALARM_VIBRATION = "vibration";
+        public static final String ALARM_DIFFICULTY = "difficulty";
     }
 }

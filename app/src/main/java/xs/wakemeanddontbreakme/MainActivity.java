@@ -1,6 +1,7 @@
 package xs.wakemeanddontbreakme;
 
 import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,9 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Log.d("TAG", "BEFORE DB CREATE");
         db = new DatabaseHandler(getApplicationContext());
-        Log.d("TAG2", "AFTER DB CREATE");
 
         lv = (ListView) findViewById(R.id.alarm_list);
         //makes the list clickable
@@ -38,17 +37,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> arg0, View view,
                                             int position, long id) {
                         TextView tv = (TextView) view.findViewById(R.id.alarmText);
-                        String alarm = tv.getText().toString();
+                        String alarmInfo = tv.getText().toString();
                         Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
-                        //Toast.makeText(getApplicationContext(), "hello " + position + "|"+alarmDetails+"|"+alarm+"|", Toast.LENGTH_SHORT).show();
-                        intent.putExtra("ALARM_INFO", alarm);
+                        intent.putExtra("ALARM_INFO", alarmInfo);
+                        intent.putExtra("IS_EDIT", true);
                         startActivity(intent);
                     }
                 }
         );
-
-        //rensa larmlistan
-        //db.removeAllAlarms();
         updateInterface();
     }
 
@@ -62,8 +58,22 @@ public class MainActivity extends AppCompatActivity {
     //Called when apply button pressed
     public void addAlarm(View view) {
         Intent intent = new Intent(this, AlarmActivity.class);
+        intent.putExtra("ISEDIT", false);
         startActivity(intent);
     }
+
+//    public void removeAllAlarms(View view) {
+//        ArrayList<String> allAlarms = db.getAllAlarms();
+//        for (String alarmName : allAlarms) {
+//            alarmName = alarmName.split("\\r?\\n")[0];
+//            int pos = db.getCurrentAlarmPosition(alarmName);
+//            Intent receiverIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), pos, receiverIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+//            alarmManager.cancel(pendingIntent);
+//            db.removeAlarm(alarmName);
+//            updateInterface();
+//        }
+//    }
 
     //Called when done adding/editing/removing an alarm
     public void updateInterface() {
@@ -71,13 +81,4 @@ public class MainActivity extends AppCompatActivity {
         lv.setAdapter(new RowAdapter(this, alarms, alarms.size()));
     }
 
-
-    public void getMeBack(View view){
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
-//    public void notImplemented(View view){
-//        setContentView(R.layout.activity_need_implementation);
-//    }
 }

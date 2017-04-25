@@ -147,9 +147,8 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shake_event_task);
         //Run private method to setup ringtone and vibrator
-        setUpRingtoneAndVibration();
-        ringtone.play();
-        vibrator.vibrate(vibrationPattern, 0);
+        Bundle extras = getIntent().getExtras();
+        setUpRingtoneAndVibration(extras.getInt("vibration"));
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorListener = new ShakeEventListener();
         mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
@@ -163,13 +162,17 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
         });
 
     }
-    private void setUpRingtoneAndVibration() {
+    private void setUpRingtoneAndVibration(int vibration) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if (alarmUri == null) {
             alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         }
         ringtone = RingtoneManager.getRingtone(this.getApplicationContext(), alarmUri);
-        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        ringtone.play();
+        if (vibration == 1) {
+            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(vibrationPattern, 0);
+        }
     }
     @Override
     protected void onResume() {
@@ -193,6 +196,11 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
     protected void onStop(){
         mSensorManager.unregisterListener(mSensorListener);
         super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        return;
     }
 
 }
