@@ -20,6 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         int difficulty = extras.getInt("difficulty");
 
         int rand = randInt(1, 2);
+//        int rand = 2;
         switch (rand) {
             case 1:
                 //TODO If clause for difficulty
