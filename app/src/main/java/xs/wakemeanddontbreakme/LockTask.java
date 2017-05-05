@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -33,7 +34,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     private TextView xText, passText;
     private SensorManager mSensorManager;
     private Sensor mOrientation;
-
+    private MediaPlayer mp;
     private float mCurrentDegree = 0f;
     private double fakeVal;
     private String realPassword, password;
@@ -43,6 +44,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock_task);
+        mp = MediaPlayer.create(this,R.raw.success);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
@@ -107,6 +109,8 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     private void enterPassword(String pw) {
         if (pw.equals(realPassword)) {
             dismissAlarm();
+
+            mp.start();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("The entered passcode was incorrect");

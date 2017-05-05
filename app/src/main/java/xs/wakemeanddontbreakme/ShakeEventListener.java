@@ -5,11 +5,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -25,6 +27,7 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
     long[] vibrationPattern = {0, 1000, 1000};
     private SensorManager mSensorManager;
     private ShakeEventListener mSensorListener;
+    private MediaPlayer mp;
     /** Minimum movement force to consider. */
     private static final int MIN_FORCE = 10;
 
@@ -146,6 +149,7 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shake_event_task);
+        mp = MediaPlayer.create(this,R.raw.success);
         //Run private method to setup ringtone and vibrator
         Bundle extras = getIntent().getExtras();
         setUpRingtoneAndVibration(extras.getInt("vibration"));
@@ -156,6 +160,8 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
             public void onShake() {
                         finish();
                         ringtone.stop();
+                        mp.start();
+                        if(vibrator!=null)
                         vibrator.cancel();
 
             }

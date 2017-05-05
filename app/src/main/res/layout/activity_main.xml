@@ -17,6 +17,7 @@
         android:background="@drawable/rounded_button"
         android:onClick="addAlarm"
         android:text="+"
+        android:gravity="center"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -42,8 +43,8 @@
 
     <ListView
         android:id="@+id/alarm_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="440dp"
         android:layout_above="@id/addButton"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="60dp"

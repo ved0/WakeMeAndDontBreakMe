@@ -1,6 +1,7 @@
 package xs.wakemeanddontbreakme;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.media.Ringtone;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 
 
 public class ShoutActivity extends AppCompatActivity {
+    private MediaPlayer mp;
     private Ringtone ringtone;
     private Vibrator vibrator;
     private static final int sampleRate = 44100;
@@ -30,6 +32,7 @@ public class ShoutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mp = MediaPlayer.create(this,R.raw.success);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shout);
         audio = findBestCompatibleAudioRecord();
@@ -92,6 +95,7 @@ public class ShoutActivity extends AppCompatActivity {
                                 micImage.setImageResource(R.drawable.microphone2);
                             } else if (lastLevel > 100) {
                                 micImage.setImageResource(R.drawable.microphone3);
+                                mp.start();
                                 dismissAlarm();
                             }
 
