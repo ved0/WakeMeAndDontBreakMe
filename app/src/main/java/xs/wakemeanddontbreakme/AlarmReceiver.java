@@ -19,19 +19,27 @@ public class AlarmReceiver extends BroadcastReceiver {
         int vibration = extras.getInt("vibration");
         int difficulty = extras.getInt("difficulty");
 
-        int rand = randInt(1, 2);
+        int rand = randInt(1, 3);
         switch (rand) {
             case 1:
                 //TODO If clause for difficulty
                 Intent i1 = new Intent(context, LockTask.class);
                 i1.putExtra("vibration", vibration);
+                i1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i1);
                 break;
             case 2:
                 //TODO if clause for difficulty
                 Intent i2 = new Intent(context, ShakeEventListener.class);
                 i2.putExtra("vibration", vibration);
+                i2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i2);
+                break;
+            case 3:
+                Intent i3 = new Intent(context, ShoutActivity.class);
+                i3.putExtra("vibration", vibration);
+                i3.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(i3);
                 break;
         }
     }

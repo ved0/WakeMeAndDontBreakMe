@@ -190,6 +190,7 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
     public void onDismissPress(View view) {
         finish();
         ringtone.stop();
+        if(vibrator!=null)
         vibrator.cancel();
     }
     @Override

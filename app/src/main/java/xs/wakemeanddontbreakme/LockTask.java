@@ -97,6 +97,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     private void dismissAlarm() {
         ringtone.stop();
+        if(vibrator!=null)
         vibrator.cancel();
         super.onStop();
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
