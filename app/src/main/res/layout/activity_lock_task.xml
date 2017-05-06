@@ -39,8 +39,8 @@
 
     <ImageView
         android:id="@+id/lock_image"
-        android:layout_width="432dp"
-        android:layout_height="347dp"
+        android:layout_width="332dp"
+        android:layout_height="247dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="46dp"

@@ -28,8 +28,12 @@ public class RowAdapter extends BaseAdapter {
     Context context;
     ArrayList aL;
     DatabaseHandler db;
+    Switch sw;
     int limit;
+    private boolean isChecked;
     private LayoutInflater inflater = null;
+    private static final int switchOff = 0;
+    private static final int switchOn = 1;
 
 
     public RowAdapter(Context context, ArrayList aL, int size) {
@@ -66,16 +70,23 @@ public class RowAdapter extends BaseAdapter {
         for (String s : db.getAllAlarms()) {
             final TextView alarmText = (TextView) vi.findViewById(R.id.alarmText);
             alarmText.setText(db.getAllAlarms().get(position));
-            Switch sw = (Switch) vi.findViewById(R.id.switch1);
+            final String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
+            sw = (Switch) vi.findViewById(R.id.switch1);
+            if(db.getSwitchStatus(alarmInfo[0])){
+                sw.setChecked(true);
+            }else{
+                sw.setChecked(false);
+            }
             sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton cb, boolean on) {
                     AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
                     if (on) {
-                        String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
+                       // String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
                         int lastPos = db.getLastAlarmPosition();
                         Calendar calendar = Calendar.getInstance();
                         String[] alarmTime = alarmInfo[1].split(":");
+                        db.changeSwitchStatus(alarmInfo[0],switchOn);
                         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(alarmTime[0]));
                         calendar.set(Calendar.MINUTE, Integer.parseInt(alarmTime[1]));
                         Intent receiverIntent = new Intent(context, AlarmReceiver.class);
@@ -91,6 +102,7 @@ public class RowAdapter extends BaseAdapter {
                         Toast.makeText(context, alarmInfo[0] + " has been enabled", Toast.LENGTH_LONG).show();
                     } else {
                         String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
+                        db.changeSwitchStatus(alarmInfo[0],switchOff);
                         int currentAlarmPosition = db.getCurrentAlarmPosition(alarmInfo[0]);
                         Intent receiverIntent = new Intent(context, AlarmReceiver.class);
                         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, currentAlarmPosition, receiverIntent, PendingIntent.FLAG_CANCEL_CURRENT);

@@ -8,8 +8,9 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="97dp"
+        android:layout_width="95dp"
         android:layout_height="95dp"
+        android:layout_marginTop="10dp"
         app:srcCompat="@drawable/logo" />
 
     <TextView
@@ -18,7 +19,7 @@
         android:layout_height="85dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:text="AlarmText"
         android:textSize="20dp" />
 
@@ -26,13 +27,10 @@
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
         android:layout_height="42dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="40dp"
-        android:layout_weight="0.49"
-        android:checked="true"
-        android:showText="true"
-        android:textOff="Off"
-        android:textOn="On" />
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_weight="0.30"
+        android:checked="true"/>
 
 
 </LinearLayout>

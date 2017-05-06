@@ -9,10 +9,11 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_REPEATING;
+import static xs.wakemeanddontbreakme.DBContract.DBEntry.SWITCH_INFO;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.TABLE_NAME;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_NAME;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_TIME;
-import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DAYS;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_POSITION;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_VIBRATION;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DIFFICULTY;
@@ -24,6 +25,7 @@ import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DIFFICULTY;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
+    private static final int switchOn = 1;
     public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "WakeMeDontBreakMeDB";
 
@@ -31,10 +33,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_NAME + " (" +
                     ALARM_NAME + " TEXT NOT NULL PRIMARY KEY," +
                     ALARM_TIME + " TEXT NOT NULL," +
-                    ALARM_DAYS + " TEXT NOT NULL," +
                     ALARM_POSITION + " INTEGER NOT NULL," +
                     ALARM_VIBRATION + " INTEGER NOT NULL," +
-                    ALARM_DIFFICULTY + " INTEGER NOT NULL" +
+                    ALARM_DIFFICULTY + " INTEGER NOT NULL," +
+                    ALARM_REPEATING + " TEXT NOT NULL," +
+                    SWITCH_INFO + " INTEGER NOT NULL"+
                     ")";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -57,18 +60,47 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    public long addAlarm(String alarmName, String alarmTime, String alarmDays, int position, int vibration, int difficulty)  {
+    public long addAlarm(String alarmName, String alarmTime, int position, int vibration, int difficulty, String repeating)  {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ALARM_NAME, alarmName);
         values.put(ALARM_TIME, alarmTime);
-        values.put(ALARM_DAYS, alarmDays);
         values.put(ALARM_POSITION, position);
         values.put(ALARM_VIBRATION, vibration);
         values.put(ALARM_DIFFICULTY, difficulty);
+        values.put(ALARM_REPEATING, repeating);
+        values.put(SWITCH_INFO, switchOn);
         long result = db.insert(TABLE_NAME, null, values);
         db.close();
         return result;
+    }
+
+    public void changeSwitchStatus(String alarmName, int status){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SWITCH_INFO, status);
+        String selection = ALARM_NAME + " LIKE ?";
+        String[] selectionArgs = {alarmName};
+        db.update(TABLE_NAME,values,selection,selectionArgs);
+        db.close();
+    }
+
+    public boolean getSwitchStatus(String alarmName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = ALARM_NAME + " = ?";
+        String[] selectionArgs = {alarmName};
+        String[] projection = {SWITCH_INFO};
+        int switchStatus = 0;
+        Cursor cursor = db.query(TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            switchStatus = cursor.getInt(cursor.getColumnIndex(SWITCH_INFO));
+        }
+        db.close();
+        if(switchStatus == 0){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void removeAlarm(String alarmName) {
@@ -79,15 +111,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void changeRecord(String oldName, String alarmName, String alarmTime, String alarmDays, int pos, int vibration, int difficulty) {
+    public void changeRecord(String oldName, String alarmName, String alarmTime, int pos, int vibration, int difficulty, String repeating) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ALARM_NAME, alarmName);
         values.put(ALARM_TIME, alarmTime);
-        values.put(ALARM_DAYS, alarmDays);
         values.put(ALARM_POSITION, pos);
         values.put(ALARM_VIBRATION, vibration);
         values.put(ALARM_DIFFICULTY, difficulty);
+        values.put(ALARM_REPEATING, repeating);
         String selection = ALARM_NAME + " LIKE ?";
         String[] selectionArgs = {oldName};
         db.update(TABLE_NAME, values, selection, selectionArgs);
@@ -120,6 +152,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         db.close();
         return dif;
+    }
+
+    public String getAlarmRepetition(String alarmName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = ALARM_NAME + " = ?";
+        String[] selectionArgs = {alarmName};
+        String[] projection = {ALARM_REPEATING};
+        String repeating = "";
+        Cursor cursor = db.query(TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            repeating = cursor.getString(cursor.getColumnIndex(ALARM_REPEATING));
+        }
+        db.close();
+        return repeating;
+    }
+
+    public String getAlarm(String alarmName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = ALARM_NAME + " = ?";
+        String[] selectionArgs = {alarmName};
+        String[] projection = {ALARM_NAME};
+        String alarm = "";
+        Cursor cursor = db.query(TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            alarm = cursor.getString(cursor.getColumnIndex(ALARM_NAME));
+        }
+        db.close();
+        return alarm;
     }
 
     public int getLastAlarmPosition() {
@@ -158,7 +218,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectAllQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                String alarm = cursor.getString(0) + "\n" + cursor.getString(1) + "\n" + cursor.getString(2);
+                String alarm = cursor.getString(0) + "\n" + cursor.getString(1) + "\n" + cursor.getString(5);
                 alarmList.add(alarm);
             } while (cursor.moveToNext());
         }

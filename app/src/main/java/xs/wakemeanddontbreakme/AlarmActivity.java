@@ -33,10 +33,11 @@ public class AlarmActivity extends AppCompatActivity {
     Button deleteButton;
     Switch vibrationSwitch;
     Spinner difficultySpinner;
+    Spinner daysSpinner;
 
     ArrayList<ToggleButton> toggleButtons;
     int lastPos, currentPos, switchValue, difficulty;
-    String savedAlarmName;
+    String savedAlarmName, repeating;
     boolean isEdit;
 
     @Override
@@ -48,11 +49,14 @@ public class AlarmActivity extends AppCompatActivity {
         nameText = (EditText) findViewById(R.id.getAlarmName);
         deleteButton = (Button) findViewById(R.id.deleteButton);
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
+        alarmTimePicker.setIs24HourView(true);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         vibrationSwitch = (Switch) findViewById(R.id.vibrationSwitch);
         setSwitchListener();
         difficultySpinner = (Spinner) findViewById(R.id.difficultySpinner);
+        daysSpinner = (Spinner) findViewById(R.id.repeatingSpinner);
         initiateSpinner();
+        initiateDaySpinner();
         Bundle extras = getIntent().getExtras();         //Determine if instance is an edit or a create
         isEdit = extras.getBoolean("IS_EDIT");
         if (isEdit) {
@@ -77,12 +81,16 @@ public class AlarmActivity extends AppCompatActivity {
         //Get position value of the most recently added alarm
         lastPos = db.getLastAlarmPosition();
         if (isEdit) {           //If user is editing
+            if(db.getAlarm(newAlarmName) == "" || savedAlarmName.equals(newAlarmName)){
             String oldName = savedAlarmName;
             currentPos = db.getCurrentAlarmPosition(oldName);
             difficulty = difficultySpinner.getSelectedItemPosition();
+            repeating = daysSpinner.getSelectedItem().toString();
             //TODO newAlarmDays
+            //Set switch on!
+            db.changeSwitchStatus(oldName, 1);
             //Change the alarm in the database
-            db.changeRecord(oldName, newAlarmName, newAlarmTime, newAlarmDays, lastPos + 1, switchValue, difficulty);
+            db.changeRecord(oldName, newAlarmName, newAlarmTime, lastPos + 1, switchValue, difficulty, repeating);
             //Delete old alarm and create new one within alarmManager
             Intent receiverIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
             receiverIntent.putExtra("vibration", switchValue);
@@ -95,14 +103,18 @@ public class AlarmActivity extends AppCompatActivity {
                 alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
             } else {
                 timeInMillis += AlarmManager.INTERVAL_DAY;
-                alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);}
+                finish();
+            } else {
+                    Toast.makeText(this, "Name can not be the same as existing alarm",
+                           Toast.LENGTH_LONG).show();
             }
-            finish();
         } else {             //If user is adding new alarm
             //Add to database, check if any conflict
             difficulty = difficultySpinner.getSelectedItemPosition();
+            repeating = daysSpinner.getSelectedItem().toString();
             //TODO newAlarmDays
-            long result = db.addAlarm(newAlarmName, newAlarmTime, newAlarmDays, lastPos + 1, switchValue, difficulty);
+            long result = db.addAlarm(newAlarmName, newAlarmTime, lastPos + 1, switchValue, difficulty, repeating);
             if (result < 0) {
                 Toast.makeText(this, "Name can not be the same as existing alarm",
                         Toast.LENGTH_LONG).show();
@@ -176,6 +188,21 @@ public class AlarmActivity extends AppCompatActivity {
                 difficultySpinner.setSelection(2);
                 break;
         }
+        repeating = db.getAlarmRepetition(savedAlarmName);
+        switch(repeating){
+            case "Once":
+                daysSpinner.setSelection(0);
+                break;
+            case "Monday to Friday":
+                daysSpinner.setSelection(1);
+                break;
+            case "Every day":
+                daysSpinner.setSelection(2);
+                break;
+            case "Custom":
+                daysSpinner.setSelection(3);
+                break;
+        }
     }
 
     private void setSwitchListener() {
@@ -194,6 +221,12 @@ public class AlarmActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.difficulties, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         difficultySpinner.setAdapter(adapter);
+    }
+
+    private void initiateDaySpinner(){
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.days, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        daysSpinner.setAdapter(adapter);
     }
 
     private void registerToggleButtons() {
