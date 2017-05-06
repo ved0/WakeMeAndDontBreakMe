@@ -34,17 +34,18 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     private TextView xText, passText;
     private SensorManager mSensorManager;
     private Sensor mOrientation;
-    private MediaPlayer mp;
+    private MediaPlayer mediaPlayer;
     private float mCurrentDegree = 0f;
     private double fakeVal;
     private String realPassword, password;
     private int counter = 0;
+    private int difficulty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock_task);
-        mp = MediaPlayer.create(this,R.raw.success);
+        mediaPlayer = new MediaPlayer();
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
@@ -56,11 +57,13 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         passText = (TextView) findViewById(R.id.passcode_text);
         passText.setCursorVisible(false);
         password = "";
+        Bundle extras = getIntent().getExtras();
+        setUpRingtoneAndVibration(extras.getInt("vibration"));          //Run private method to setup ringtone and vibrator
+        setUpDifficulty(extras.getInt("difficulty"));                   //Run private method to setup difficulty. NOTE: must be done before randomizePass();
         //Run password randomise
         randomizePass();
         //Run private method to setup ringtone and vibrator
-        Bundle extras = getIntent().getExtras();
-        setUpRingtoneAndVibration(extras.getInt("vibration"));
+
     }
 
     @Override
@@ -97,25 +100,29 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         dismissAlarm();
     }
 
+    public void onMutePress(View view) {
+        mediaPlayer.stop();
+    }
+
     private void dismissAlarm() {
-        ringtone.stop();
-        if(vibrator!=null)
-        vibrator.cancel();
-        super.onStop();
-        mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
+        mediaPlayer.stop();
+        if (vibrator != null) {
+            vibrator.cancel();
+        }
+        onStop();
         finish();
     }
 
     private void enterPassword(String pw) {
         if (pw.equals(realPassword)) {
+            MediaPlayer temp = MediaPlayer.create(this, R.raw.success);
+            temp.start();
             dismissAlarm();
-
-            mp.start();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("The entered passcode was incorrect");
+            builder.setMessage("The entered passcode was incorrect, please try again");
             builder.setCancelable(false);
-            builder.setTitle("Sorry");
+            builder.setTitle("I'm sorry friend");
             builder.setPositiveButton("Try again", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     counter = 0;
@@ -123,7 +130,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
                     randomizePass();
                 }
             });
-            builder.setIcon(android.R.drawable.ic_dialog_alert);
+            builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
             AlertDialog alert = builder.create();
             alert.show();
         }
@@ -138,40 +145,56 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         }
         realPassword = sb.toString();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("The passcode is: " + sb.toString());
+        builder.setMessage("To deactivate the alarm, enter the passcode by rotating the phone and pressing enter.");
         builder.setCancelable(false);
-        builder.setTitle("ATTENTION");
+        builder.setTitle("Good morning! The passcode is: " + sb.toString());
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
 
             }
         });
-        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
         AlertDialog alert = builder.create();
         alert.show();
     }
 
+    private void setUpDifficulty(int dif) {
+        switch (dif) {
+            case 0: difficulty = 100;
+                break;
+            case 1: difficulty = 10;
+                break;
+            case 2: difficulty = 1;
+                break;
+        }
+    }
+
     private void setUpRingtoneAndVibration(int vibration) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (alarmUri == null) {
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        }
-        ringtone = RingtoneManager.getRingtone(this.getApplicationContext(), alarmUri);
-        ringtone.play();
-        if (vibration == 1) {
-            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(vibrationPattern, 0);
+        try{
+            mediaPlayer.setDataSource(this, alarmUri);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.setVolume(1.0f, 1.0f);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            if (vibration == 1) {
+                vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(vibrationPattern, 0);
+            }
+        } catch (Exception e) {
+
         }
     }
 
     private int roundDown(double val) {
-        int roundedVal = (int) val/10;
-        roundedVal *= 10;
+        int roundedVal = (int) val / difficulty;
+        roundedVal *= difficulty;
         return roundedVal;
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {}
+    public void onAccuracyChanged(Sensor sensor, int i) {
+    }
 
     @Override
     protected void onResume() {

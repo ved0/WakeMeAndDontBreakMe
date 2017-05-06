@@ -58,7 +58,9 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="179dp"
-        tools:text="@string/Apply" />
+        tools:text="@string/Apply"
+        android:textColor="#ffffae1a"
+        />
 
     <TextView
         android:id="@+id/nameText"
