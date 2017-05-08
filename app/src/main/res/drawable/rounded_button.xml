@@ -3,6 +3,9 @@
     android:shape="rectangle">
     <solid android:color="#ff8c00" />
     <corners android:bottomRightRadius="400dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:bottomLeftRadius="400dp"
         android:topRightRadius="400dp"
         android:topLeftRadius="400dp"/>

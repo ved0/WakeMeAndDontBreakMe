@@ -6,7 +6,9 @@
         android:bottomLeftRadius="400dp"
         android:topRightRadius="400dp"
         android:topLeftRadius="400dp"
-        android:src="@drawable/deleteicon"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         />
 
 </shape>

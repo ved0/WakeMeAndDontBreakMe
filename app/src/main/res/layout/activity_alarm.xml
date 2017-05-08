@@ -203,21 +203,24 @@
     <Button
         android:id="@+id/deleteButton"
         android:background="@drawable/rounded_button_with_icon"
-        android:layout_width="140dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:onClick="onDeletePress"
-        android:text="Delete alarm"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:drawableTop = "@android:drawable/ic_menu_delete"
+        android:scaleType="fitCenter"
+        android:paddingTop="5dp"
+        android:textColor="#fff"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginRight="5dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="5dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
+        app:layout_constraintHorizontal_bias="0.497" />
 
 
 
