@@ -15,7 +15,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 
-public class ShoutActivity extends AppCompatActivity {
+public class ShoutTask extends AppCompatActivity {
     private MediaPlayer mp;
     private Ringtone ringtone;
     private Vibrator vibrator;

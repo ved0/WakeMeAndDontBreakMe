@@ -29,14 +29,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                 context.startActivity(i1);
                 break;
             case 2:
-                Intent i2 = new Intent(context, ShakeEventListener.class);
+                Intent i2 = new Intent(context, ShakeTask.class);
                 i2.putExtra("vibration", vibration);
                 i2.putExtra("difficulty", difficulty);
                 i2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(i2);
                 break;
             case 3:
-                Intent i3 = new Intent(context, ShoutActivity.class);
+                Intent i3 = new Intent(context, ShoutTask.class);
                 i3.putExtra("vibration", vibration);
                 i3.putExtra("difficulty", difficulty);
                 i3.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

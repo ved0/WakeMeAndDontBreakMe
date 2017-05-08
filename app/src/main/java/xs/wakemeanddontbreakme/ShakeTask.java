@@ -11,7 +11,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -20,13 +19,13 @@ import android.view.View;
  * Created by carltidelius on 2017-04-15.
  */
 
-public class ShakeEventListener extends AppCompatActivity implements SensorEventListener {
+public class ShakeTask extends AppCompatActivity implements SensorEventListener {
 
     Ringtone ringtone;
     Vibrator vibrator;
     long[] vibrationPattern = {0, 1000, 1000};
     private SensorManager mSensorManager;
-    private ShakeEventListener mSensorListener;
+    private ShakeTask mSensorListener;
     private MediaPlayer mp;
     /** Minimum movement force to consider. */
     private static final int MIN_FORCE = 10;
@@ -154,8 +153,8 @@ public class ShakeEventListener extends AppCompatActivity implements SensorEvent
         Bundle extras = getIntent().getExtras();
         setUpRingtoneAndVibration(extras.getInt("vibration"));
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensorListener = new ShakeEventListener();
-        mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
+        mSensorListener = new ShakeTask();
+        mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {
             @Override
             public void onShake() {
                         finish();
