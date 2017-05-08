@@ -1,15 +1,12 @@
 package xs.wakemeanddontbreakme;
 
 import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -58,6 +55,25 @@ public class MainActivity extends AppCompatActivity {
     //Called when apply button pressed
     public void addAlarm(View view) {
         Intent intent = new Intent(this, AlarmActivity.class);
+        intent.putExtra("ISEDIT", false);
+        startActivity(intent);
+    }
+
+
+    public void testShakeTask(View view) {
+        Intent intent = new Intent(this,ShakeTask.class);
+        intent.putExtra("ISEDIT", false);
+        startActivity(intent);
+    }
+
+    public void testLockTask(View view) {
+        Intent intent = new Intent(this,LockTask.class);
+        intent.putExtra("ISEDIT", false);
+        startActivity(intent);
+    }
+
+    public void testShoutTask(View view) {
+        Intent intent = new Intent(this,ShoutTask.class);
         intent.putExtra("ISEDIT", false);
         startActivity(intent);
     }

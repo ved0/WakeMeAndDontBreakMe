@@ -1,6 +1,7 @@
 package xs.wakemeanddontbreakme;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 
 
 /**
@@ -152,6 +154,15 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         //Run private method to setup ringtone and vibrator
         Bundle extras = getIntent().getExtras();
         setUpRingtoneAndVibration(extras.getInt("vibration"));
+        AnimationDrawable animation = new AnimationDrawable();
+        animation.addFrame(getResources().getDrawable(R.drawable.shakephone2left), 100);
+        animation.addFrame(getResources().getDrawable(R.drawable.shakephone2), 500);
+        animation.addFrame(getResources().getDrawable(R.drawable.shakephone2right), 300);
+        animation.setOneShot(false);
+
+        ImageView imageAnim =  (ImageView) findViewById(R.id.shake_phone);
+        imageAnim.setBackgroundDrawable(animation);
+        animation.start();
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorListener = new ShakeTask();
         mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {

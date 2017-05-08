@@ -72,8 +72,9 @@ public class ShoutTask extends AppCompatActivity {
         audio = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, bufferSize);
-
-        audio.startRecording();
+        if(audio!=null) {
+            audio.startRecording();
+        }
         thread = new Thread(new Runnable() {
             public void run() {
                 while (thread != null && !thread.isInterrupted()) {
