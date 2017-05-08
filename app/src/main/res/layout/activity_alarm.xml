@@ -202,7 +202,8 @@
 
     <Button
         android:id="@+id/deleteButton"
-        android:layout_width="170dp"
+        android:background="@drawable/rounded_button_with_icon"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:onClick="onDeletePress"

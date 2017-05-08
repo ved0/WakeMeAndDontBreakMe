@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#ff8c00" />
+    <corners android:bottomRightRadius="400dp"
+        android:bottomLeftRadius="400dp"
+        android:topRightRadius="400dp"
+        android:topLeftRadius="400dp"
+        android:src="@drawable/deleteicon"
+        />
+
+</shape>

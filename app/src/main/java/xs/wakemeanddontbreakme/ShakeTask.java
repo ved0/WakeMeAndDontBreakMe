@@ -6,15 +6,19 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+
+import static xs.wakemeanddontbreakme.R.id.shake_phone;
 
 
 /**
@@ -146,23 +150,32 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+    private final int[] imageArray = { R.drawable.shakephone2left, R.drawable.shakephone2,
+            R.drawable.shakephone2right, R.drawable.shakephone2};;
+    private ImageView image;
+    private final Handler handler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shake_event_task);
         mp = MediaPlayer.create(this,R.raw.success);
+        image = (ImageView)findViewById(shake_phone);
         //Run private method to setup ringtone and vibrator
         Bundle extras = getIntent().getExtras();
         setUpRingtoneAndVibration(extras.getInt("vibration"));
-        AnimationDrawable animation = new AnimationDrawable();
-        animation.addFrame(getResources().getDrawable(R.drawable.shakephone2left), 100);
-        animation.addFrame(getResources().getDrawable(R.drawable.shakephone2), 500);
-        animation.addFrame(getResources().getDrawable(R.drawable.shakephone2right), 300);
-        animation.setOneShot(false);
+        Runnable runnable = new Runnable() {
+            int i = 0;
 
-        ImageView imageAnim =  (ImageView) findViewById(R.id.shake_phone);
-        imageAnim.setBackgroundDrawable(animation);
-        animation.start();
+            public void run() {
+                image.setImageResource(imageArray[i]);
+                i++;
+                if (i > imageArray.length - 1) {
+                    i = 0;
+                }
+                handler.postDelayed(this, 500);
+            }
+        };
+        handler.postDelayed(runnable, 500);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorListener = new ShakeTask();
         mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {

@@ -10,7 +10,7 @@
         android:id="@+id/microphone"
         android:layout_width="255dp"
         android:layout_height="255dp"
-        app:srcCompat="@drawable/microphone3"
+        app:srcCompat="@drawable/microphone1"
         android:layout_centerInParent="true"
         tools:layout_editor_absoluteX="65dp"
         tools:layout_editor_absoluteY="128dp" />
@@ -19,12 +19,16 @@
         android:id="@+id/editText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Shout to wake up!"
         android:layout_below="@+id/microphone"
-        android:gravity="center"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="38dp"
+        android:background="@android:color/transparent"
+        android:ems="10"
+        android:enabled="false"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:singleLine="false"
+        android:text="Shout to wake up!" />
 
 
 </RelativeLayout>
