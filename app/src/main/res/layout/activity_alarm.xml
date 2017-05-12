@@ -202,26 +202,25 @@
 
     <Button
         android:id="@+id/deleteButton"
-        android:background="@drawable/rounded_button_with_icon"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:onClick="onDeletePress"
-        android:gravity="center"
         android:layout_gravity="center"
-        android:drawableTop = "@android:drawable/ic_menu_delete"
-        android:scaleType="fitCenter"
-        android:paddingTop="5dp"
-        android:textColor="#fff"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="0dp"
-        android:layout_marginRight="5dp"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="-4dp"
         android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/rounded_button_with_icon"
+        android:drawableTop="@android:drawable/ic_menu_delete"
+        android:gravity="center"
+        android:onClick="onDeletePress"
+        android:paddingTop="5dp"
+        android:scaleType="fitCenter"
+        android:textColor="#fff"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.497" />
-
+        app:layout_constraintRight_toRightOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

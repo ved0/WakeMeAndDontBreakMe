@@ -229,10 +229,6 @@ public class AlarmActivity extends AppCompatActivity {
         daysSpinner.setAdapter(adapter);
     }
 
-    private void registerToggleButtons() {
-
-    }
-
     @Override
     protected void onPause() {
         super.onPause();

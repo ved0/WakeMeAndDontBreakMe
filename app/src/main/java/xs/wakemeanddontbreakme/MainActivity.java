@@ -4,8 +4,12 @@ import android.app.AlarmManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
     AlarmManager alarmManager;
     ListView lv;
     DatabaseHandler db;
-
+    Intent previewIntent;
+    Button previewButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         db = new DatabaseHandler(getApplicationContext());
-
+        previewButton = (Button) findViewById(R.id.button_preview);
         lv = (ListView) findViewById(R.id.alarm_list);
         //makes the list clickable
         lv.setOnItemClickListener(
@@ -59,24 +64,57 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-    public void testShakeTask(View view) {
-        Intent intent = new Intent(this,ShakeTask.class);
-        intent.putExtra("ISEDIT", false);
-        startActivity(intent);
+    public void onPreviewPress(View view) {
+        PopupMenu popup1 = new PopupMenu(this, previewButton);
+        popup1.getMenuInflater().inflate(R.menu.preview_popup, popup1.getMenu());
+        popup1.show();
+        popup1.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                String task = item.toString();
+                Log.d("TAG", task);
+                previewTask(task);
+                return true;
+            }
+        });
     }
 
-    public void testLockTask(View view) {
-        Intent intent = new Intent(this,LockTask.class);
-        intent.putExtra("ISEDIT", false);
-        startActivity(intent);
+    private void previewTask(String task) {
+        switch (task) {
+            case "Lock":
+                previewIntent = new Intent(getApplicationContext(), LockTask.class);
+                break;
+            case "Shake":
+                previewIntent = new Intent(getApplicationContext(), ShakeTask.class);
+                break;
+            case "Shout":
+                previewIntent = new Intent(getApplicationContext(), ShoutTask.class);
+                break;
+        }
+        PopupMenu popup2 = new PopupMenu(this, previewButton);
+        popup2.getMenuInflater().inflate(R.menu.diff_select, popup2.getMenu());
+        popup2.show();
+        popup2.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                String difficulty = item.toString();
+                switch (difficulty) {
+                    case "Hard":
+                        previewIntent.putExtra("difficulty", 0);
+                        break;
+                    case "Harder":
+                        previewIntent.putExtra("difficulty", 1);
+                        break;
+                    case "NO FEAR":
+                        previewIntent.putExtra("difficulty", 2);
+                        break;
+                }
+                previewIntent.putExtra("vibration", 0);
+                startActivity(previewIntent);
+                return true;
+            }
+        });
     }
 
-    public void testShoutTask(View view) {
-        Intent intent = new Intent(this,ShoutTask.class);
-        intent.putExtra("ISEDIT", false);
-        startActivity(intent);
-    }
+
 
 //    public void removeAllAlarms(View view) {
 //        ArrayList<String> allAlarms = db.getAllAlarms();
