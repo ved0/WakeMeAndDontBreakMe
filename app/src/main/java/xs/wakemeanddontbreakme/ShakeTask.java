@@ -43,13 +43,13 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
      * Minimum times in a shake gesture that the direction of movement needs to
      * change.
      */
-    private static final int MIN_DIRECTION_CHANGE = 30;
+    private int MIN_DIRECTION_CHANGE = 30;
 
     /** Maximum pause between movements. */
     private static final int MAX_PAUSE_BETHWEEN_DIRECTION_CHANGE = 200;
 
     /** Maximum allowed time for shake gesture. */
-    private static final int MAX_TOTAL_DURATION_OF_SHAKE = 3000;
+    private static final int MAX_TOTAL_DURATION_OF_SHAKE = 30000;
 
     /** Time when the gesture started. */
     private long mFirstDirectionChangeTime = 0;
@@ -73,6 +73,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     private OnShakeListener mShakeListener;
     /** The progressbar*/
     private ProgressBar firstBar;
+    private Runnable update;
 
 
     /**
@@ -115,13 +116,15 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shake_event_task);
+        Bundle extras = getIntent().getExtras();
+        setUpRingtoneAndVibration(extras.getInt("vibration"));
+        setUpDifficulty(extras.getInt("difficulty"));
+
         firstBar = (ProgressBar) findViewById(R.id.firstBar3);
         firstBar.setVisibility(View.VISIBLE);
         firstBar.setMax(MIN_DIRECTION_CHANGE);
         mediaPlayer = new MediaPlayer();
-        Bundle extras = getIntent().getExtras();
-        setUpRingtoneAndVibration(extras.getInt("vibration"));
-        setUpDifficulty(extras.getInt("difficulty"));
+
         image = (ImageView)findViewById(shake_phone);
 
 
@@ -140,7 +143,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         };
         handler.postDelayed(runnable, 500);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensorListener = new ShakeTask();
+        mSensorListener = this;
         mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {
             @Override
             public void onShake() {
@@ -195,6 +198,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
                     if (totalDuration < MAX_TOTAL_DURATION_OF_SHAKE) {
                         mShakeListener.onShake();
                         resetShakeParameters();
+
                     }
                 }
 
@@ -202,6 +206,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
                 resetShakeParameters();
             }
         }
+
     }
     private void setUpRingtoneAndVibration(int vibration) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -225,11 +230,20 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         mSensorManager.registerListener(mSensorListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_UI);
+        update = new Runnable() {
+            @Override
+            public void run() {
+                firstBar.setProgress(mDirectionChangeCount);
+                handler.postDelayed(update, 1000);
+            }
+        };
+        handler.post(update);
    }
 
     @Override
     protected void onPause() {
         mSensorManager.unregisterListener(mSensorListener);
+        handler.removeCallbacks(update);
         super.onPause();
     }
     public void onDismissPress(View view) {
@@ -244,11 +258,11 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     }
     private void setUpDifficulty(int dif) {
         switch (dif) {
-            case 0: difficulty = 100;
+            case 0: MIN_DIRECTION_CHANGE = 30;
                 break;
-            case 1: difficulty = 10;
+            case 1: MIN_DIRECTION_CHANGE = 60;
                 break;
-            case 2: difficulty = 1;
+            case 2: MIN_DIRECTION_CHANGE = 90;
                 break;
         }
     }
