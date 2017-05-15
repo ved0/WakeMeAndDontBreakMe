@@ -69,8 +69,13 @@ public class RowAdapter extends BaseAdapter {
         db = new DatabaseHandler(context);
         for (String s : db.getAllAlarms()) {
             final TextView alarmText = (TextView) vi.findViewById(R.id.alarmText);
-            alarmText.setText(db.getAllAlarms().get(position));
-            final String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
+            final String [] alarmInfo = db.getAllAlarms().get(position).split("\\r?\\n");
+            if(alarmInfo[2].equals("Custom")){
+                String customDays = db.getAlarmDays(alarmInfo[0]);
+                alarmText.setText(alarmInfo[0]+"\n" +alarmInfo[1]+"\n"+customDays);
+            } else {
+                alarmText.setText(db.getAllAlarms().get(position));
+            }
             sw = (Switch) vi.findViewById(R.id.switch1);
             if(db.getSwitchStatus(alarmInfo[0])){
                 sw.setChecked(true);
@@ -82,7 +87,7 @@ public class RowAdapter extends BaseAdapter {
                 public void onCheckedChanged(CompoundButton cb, boolean on) {
                     AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
                     if (on) {
-                       // String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
+                        // String[] alarmInfo = alarmText.getText().toString().split("\\r?\\n");
                         int lastPos = db.getLastAlarmPosition();
                         Calendar calendar = Calendar.getInstance();
                         String[] alarmTime = alarmInfo[1].split(":");

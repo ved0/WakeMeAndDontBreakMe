@@ -9,7 +9,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DAYS;
+import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DAYS_ID;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_REPEATING;
+import static xs.wakemeanddontbreakme.DBContract.DBEntry.DAY_TABLE_NAME;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.SWITCH_INFO;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.TABLE_NAME;
 import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_NAME;
@@ -37,8 +40,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     ALARM_VIBRATION + " INTEGER NOT NULL," +
                     ALARM_DIFFICULTY + " INTEGER NOT NULL," +
                     ALARM_REPEATING + " TEXT NOT NULL," +
-                    SWITCH_INFO + " INTEGER NOT NULL"+
-                    ")";
+                    SWITCH_INFO + " INTEGER NOT NULL)";
+
+    private static final String SQL_CREATE_DAY_TABLE = "CREATE TABLE " + DAY_TABLE_NAME + " (" +
+            ALARM_NAME + " TEXT NOT NULL PRIMARY KEY," +
+            ALARM_DAYS + " TEXT NOT NULL,"+
+            ALARM_DAYS_ID + " TEXT NOT NULL)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -50,6 +57,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        db.execSQL(SQL_CREATE_DAY_TABLE);
     }
 
     @Override
@@ -58,6 +66,64 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
             onCreate(db);
         }
+    }
+
+    public void changeAlarmDays(String alarmName, String alarmDays, String daysId){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ALARM_DAYS, alarmDays);
+        values.put(ALARM_DAYS_ID, daysId);
+        String selection = ALARM_NAME + " LIKE ?";
+        String[] selectionArgs = {alarmName};
+        db.update(DAY_TABLE_NAME,values,selection,selectionArgs);
+        db.close();
+    }
+
+    public void deleteAlarmDays(String alarmName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selection = ALARM_NAME + " LIKE ?";
+        String[] selectionArgs = {alarmName};
+        db.delete(DAY_TABLE_NAME, selection, selectionArgs);
+        db.close();
+    }
+
+    public String getAlarmDaysId(String alarmName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = ALARM_NAME + " = ?";
+        String[] selectionArgs = {alarmName};
+        String[] projection = {ALARM_DAYS_ID};
+        String daysId = "";
+        Cursor cursor = db.query(DAY_TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            daysId = cursor.getString(cursor.getColumnIndex(ALARM_DAYS_ID));
+        }
+        db.close();
+        return daysId;
+    }
+
+    public String getAlarmDays(String alarmName){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selection = ALARM_NAME + " = ?";
+        String[] selectionArgs = {alarmName};
+        String[] projection = {ALARM_DAYS};
+        String alarmDays = "";
+        Cursor cursor = db.query(DAY_TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            alarmDays = cursor.getString(cursor.getColumnIndex(ALARM_DAYS));
+        }
+        db.close();
+        return alarmDays;
+    }
+
+    public long addAlarmDays(String alarmName, String alarmDays, String daysId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ALARM_NAME, alarmName);
+        values.put(ALARM_DAYS, alarmDays);
+        values.put(ALARM_DAYS_ID, daysId);
+        long result = db.insert(DAY_TABLE_NAME, null, values);
+        db.close();
+        return result;
     }
 
     public long addAlarm(String alarmName, String alarmTime, int position, int vibration, int difficulty, String repeating)  {

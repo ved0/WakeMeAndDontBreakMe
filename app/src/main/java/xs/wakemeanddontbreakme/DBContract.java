@@ -13,6 +13,7 @@ public final class DBContract {
 
     /* Inner class that defines the table contents */
     public static class DBEntry implements BaseColumns {
+        //AlarmDatabase
         public static final String TABLE_NAME = "alarms";
         public static final String ALARM_NAME = "name";
         public static final String ALARM_TIME = "time";
@@ -21,5 +22,10 @@ public final class DBContract {
         public static final String ALARM_DIFFICULTY = "difficulty";
         public static final String ALARM_REPEATING = "repeating";
         public static final String SWITCH_INFO = "switch";
+        //AlarmDaysDatabase
+        public static final String DAY_TABLE_NAME = "alarmDays";
+        public static final String ALARM_DAYS = "days";
+        public static final String ALARM_DAYS_ID = "days_id";
+
     }
 }

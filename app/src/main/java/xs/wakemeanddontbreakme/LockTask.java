@@ -1,21 +1,27 @@
 package xs.wakemeanddontbreakme;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Vibrator;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -29,6 +35,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     Vibrator vibrator;
     long[] vibrationPattern = {0, 1000, 1000};
 
+    private int currentApiVersion;
 
     private ImageView lock;
     private TextView xText, passText;
@@ -45,6 +52,39 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock_task);
+        currentApiVersion = android.os.Build.VERSION.SDK_INT;
+
+        final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        if(currentApiVersion >= Build.VERSION_CODES.KITKAT)
+        {
+
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+
+            // Code below is to handle presses of Volume up or Volume down.
+            // Without this, after pressing volume buttons, the navigation bar will
+            // show up and won't hide
+            final View decorView = getWindow().getDecorView();
+            decorView
+                    .setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
+                    {
+
+                        @Override
+                        public void onSystemUiVisibilityChange(int visibility)
+                        {
+                            if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+                            {
+                                decorView.setSystemUiVisibility(flags);
+
+                            }
+                        }
+                    });
+        }
+
         mediaPlayer = new MediaPlayer();
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
@@ -64,6 +104,24 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         randomizePass();
         //Run private method to setup ringtone and vibrator
 
+    }
+
+
+    @SuppressLint("NewApi")
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus)
+    {
+        super.onWindowFocusChanged(hasFocus);
+        if(currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus)
+        {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     }
 
     @Override
@@ -115,6 +173,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     private void enterPassword(String pw) {
         if (pw.equals(realPassword)) {
+
             MediaPlayer temp = MediaPlayer.create(this, R.raw.success);
             temp.start();
             dismissAlarm();
@@ -153,6 +212,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
             }
         });
+
         builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
         AlertDialog alert = builder.create();
         alert.show();
@@ -160,18 +220,21 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     private void setUpDifficulty(int dif) {
         switch (dif) {
-            case 0: difficulty = 100;
+            case 0:
+                difficulty = 100;
                 break;
-            case 1: difficulty = 10;
+            case 1:
+                difficulty = 10;
                 break;
-            case 2: difficulty = 1;
+            case 2:
+                difficulty = 1;
                 break;
         }
     }
 
     private void setUpRingtoneAndVibration(int vibration) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        try{
+        try {
             mediaPlayer.setDataSource(this, alarmUri);
             mediaPlayer.setLooping(true);
             mediaPlayer.setVolume(1.0f, 1.0f);
@@ -214,6 +277,25 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         super.onStop();
         mSensorManager.unregisterListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION));
     }
+
+
+
+
+    @Override
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if ((keyCode == KeyEvent.KEYCODE_MENU)) {
+            return true;
+
+        }
+
+
+
+        return super.onKeyDown(keyCode, event);
+
+    }
+
 
     @Override
     public void onBackPressed() {

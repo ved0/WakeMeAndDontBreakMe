@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             case "Shout":
                 previewIntent = new Intent(getApplicationContext(), ShoutTask.class);
                 break;
+            case "NFC":
+                previewIntent = new Intent(getApplicationContext(), NfcTask.class);
+                break;
         }
         PopupMenu popup2 = new PopupMenu(this, previewButton);
         popup2.getMenuInflater().inflate(R.menu.diff_select, popup2.getMenu());

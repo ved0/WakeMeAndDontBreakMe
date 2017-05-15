@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -32,10 +33,12 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     long[] vibrationPattern = {0, 1000, 1000};
     private SensorManager mSensorManager;
     private ShakeTask mSensorListener;
+    private MediaPlayer mediaPlayer;
     private MediaPlayer mp;
     /** Minimum movement force to consider. */
     private static final int MIN_FORCE = 10;
 
+    private int currentApiVersion;
     /**
      * Minimum times in a shake gesture that the direction of movement needs to
      * change.
@@ -158,6 +161,37 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shake_event_task);
+        mediaPlayer = new MediaPlayer();
+        currentApiVersion = android.os.Build.VERSION.SDK_INT;
+        final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        if(currentApiVersion >= Build.VERSION_CODES.KITKAT)
+        {
+
+            getWindow().getDecorView().setSystemUiVisibility(flags);
+
+            // Code below is to handle presses of Volume up or Volume down.
+            // Without this, after pressing volume buttons, the navigation bar will
+            // show up and won't hide
+            final View decorView = getWindow().getDecorView();
+            decorView
+                    .setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
+                    {
+
+                        @Override
+                        public void onSystemUiVisibilityChange(int visibility)
+                        {
+                            if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
+                            {
+                                decorView.setSystemUiVisibility(flags);
+                            }
+                        }
+                    });
+        }
         mp = MediaPlayer.create(this,R.raw.success);
         image = (ImageView)findViewById(shake_phone);
         //Run private method to setup ringtone and vibrator
@@ -182,7 +216,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
             @Override
             public void onShake() {
                         finish();
-                        ringtone.stop();
+                        mediaPlayer.stop();
                         mp.start();
                         if(vibrator!=null)
                         vibrator.cancel();
@@ -193,14 +227,17 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     }
     private void setUpRingtoneAndVibration(int vibration) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (alarmUri == null) {
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        }
-        ringtone = RingtoneManager.getRingtone(this.getApplicationContext(), alarmUri);
-        ringtone.play();
-        if (vibration == 1) {
-            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(vibrationPattern, 0);
+        try {
+            mediaPlayer.setDataSource(this, alarmUri);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.setVolume(1.0f, 1.0f);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            if (vibration == 1) {
+                vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(vibrationPattern, 0);
+            }
+        } catch (Exception e) {
         }
     }
     @Override
@@ -218,7 +255,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     }
     public void onDismissPress(View view) {
         finish();
-        ringtone.stop();
+        mediaPlayer.stop();
         if(vibrator!=null)
         vibrator.cancel();
     }

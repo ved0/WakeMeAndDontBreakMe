@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="center"
+        android:src="@drawable/nfc_icon" />
+
+    <TextView
+        android:id="@+id/whichTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="170dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:padding="12dip"
+        android:background="#AA000000"
+        android:textSize="20dp"
+        android:textColor="#ffffffff"
+        android:text="Scan tag !" />
+
+</FrameLayout>
