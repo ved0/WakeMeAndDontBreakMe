@@ -11,21 +11,15 @@
         android:layout_centerVertical="true"
         android:src="@drawable/shakephone2"
         />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ShakeText"
-        android:text="Shake to fill the progress bar!"
-        android:layout_above="@+id/firstBar3"
-        android:layout_centerHorizontal="true"
-        />
+
     <ProgressBar
         android:id="@+id/firstBar3"
         style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressDrawable="@drawable/progressbarfill"
         android:layout_above="@id/shake_phone"
         android:layout_centerHorizontal="true"
-        android:layout_width="200dp"
-        android:layout_height="20dp"
+        android:layout_width="500dp"
+        android:layout_height="300dp"
         android:visibility="gone"
         
         />

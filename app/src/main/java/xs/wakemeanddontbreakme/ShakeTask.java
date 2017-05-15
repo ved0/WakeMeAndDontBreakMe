@@ -1,6 +1,8 @@
 package xs.wakemeanddontbreakme;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -17,8 +19,10 @@ import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import static xs.wakemeanddontbreakme.R.id.shake_phone;
+import static xs.wakemeanddontbreakme.R.id.visible;
 
 
 /**
@@ -27,12 +31,11 @@ import static xs.wakemeanddontbreakme.R.id.shake_phone;
 
 public class ShakeTask extends AppCompatActivity implements SensorEventListener {
 
-    Ringtone ringtone;
     Vibrator vibrator;
     long[] vibrationPattern = {0, 1000, 1000};
     private SensorManager mSensorManager;
     private ShakeTask mSensorListener;
-    private MediaPlayer mp;
+    private MediaPlayer mediaPlayer;
     /** Minimum movement force to consider. */
     private static final int MIN_FORCE = 10;
 
@@ -40,13 +43,13 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
      * Minimum times in a shake gesture that the direction of movement needs to
      * change.
      */
-    private static final int MIN_DIRECTION_CHANGE = 30;
+    private int MIN_DIRECTION_CHANGE = 100;
 
     /** Maximum pause between movements. */
     private static final int MAX_PAUSE_BETHWEEN_DIRECTION_CHANGE = 200;
 
     /** Maximum allowed time for shake gesture. */
-    private static final int MAX_TOTAL_DURATION_OF_SHAKE = 3000;
+    private static final int MAX_TOTAL_DURATION_OF_SHAKE = 30000;
 
     /** Time when the gesture started. */
     private long mFirstDirectionChangeTime = 0;
@@ -69,6 +72,8 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     /** OnShakeListener that is called when shake is detected. */
     private OnShakeListener mShakeListener;
 
+    ProgressBar pb;
+
     /**
      * Interface for shake gesture.
      */
@@ -84,6 +89,58 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         mShakeListener = listener;
     }
 
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+    private final int[] imageArray = { R.drawable.shakephone2left, R.drawable.shakephone2,
+            R.drawable.shakephone2right, R.drawable.shakephone2};;
+    private ImageView image;
+    private final Handler handler = new Handler();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.shake_event_task);
+        Bundle extras = getIntent().getExtras();
+        setUpRingtoneAndVibration(extras.getInt("vibration"));
+        setUpDifficulty(extras.getInt("difficulty"));
+        mediaPlayer = MediaPlayer.create(this,R.raw.success);
+        image = (ImageView)findViewById(shake_phone);
+        pb = (ProgressBar)findViewById(R.id.firstBar3);
+        pb.setVisibility(View.VISIBLE);
+        pb.setMax(MIN_DIRECTION_CHANGE);
+        pb.setBackgroundColor(Color.argb(255,20,20,20));
+
+        Runnable runnable = new Runnable() {
+            int i = 0;
+
+            public void run() {
+                image.setImageResource(imageArray[i]);
+                i++;
+                if (i > imageArray.length - 1) {
+                    i = 0;
+                }
+                handler.postDelayed(this, 500);
+            }
+        };
+        handler.postDelayed(runnable, 500);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorListener = this;
+        mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {
+            @Override
+            public void onShake() {
+                        finish();
+
+                        mediaPlayer.start();
+                        if(vibrator!=null)
+                        vibrator.cancel();
+
+            }
+        });
+
+    }
+    int progress = 0;
+    float totalMovement = 0;
     @Override
     public void onSensorChanged(SensorEvent se) {
         // get sensor data
@@ -92,46 +149,28 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         float z = se.values[2];
 
         // calculate movement
-        float totalMovement = Math.abs(x + y + z - lastX - lastY - lastZ);
+        totalMovement = Math.abs(x + y + z - lastX - lastY - lastZ);
 
         if (totalMovement > MIN_FORCE) {
+            lastX = x;
+            lastY = y;
+            lastZ = z;
 
-            // get time
-            long now = System.currentTimeMillis();
+            Runnable updateColor = new Runnable() {
 
-            // store first movement time
-            if (mFirstDirectionChangeTime == 0) {
-                mFirstDirectionChangeTime = now;
-                mLastDirectionChangeTime = now;
-            }
-
-            // check if the last movement was not long ago
-            long lastChangeWasAgo = now - mLastDirectionChangeTime;
-            if (lastChangeWasAgo < MAX_PAUSE_BETHWEEN_DIRECTION_CHANGE) {
-
-                // store movement data
-                mLastDirectionChangeTime = now;
-                mDirectionChangeCount++;
-
-                // store last sensor data
-                lastX = x;
-                lastY = y;
-                lastZ = z;
-
-                // check how many movements are so far
-                if (mDirectionChangeCount >= MIN_DIRECTION_CHANGE) {
-
-                    // check total duration
-                    long totalDuration = now - mFirstDirectionChangeTime;
-                    if (totalDuration < MAX_TOTAL_DURATION_OF_SHAKE) {
-                        mShakeListener.onShake();
-                        resetShakeParameters();
-                    }
+                public void run() {
+                    pb.setProgress(pb.getProgress() + (int)totalMovement/20);
+                    progress = (pb.getProgress()/MIN_DIRECTION_CHANGE)*255;
+                    pb.setProgressTintList(ColorStateList.valueOf(Color.argb(255,(255-progress),progress,0)));
                 }
-
-            } else {
+            };
+            handler.post(updateColor);
+            if (pb.getProgress() >= pb.getMax()) {
+                mShakeListener.onShake();
                 resetShakeParameters();
             }
+        } else{
+            pb.setProgress(pb.getProgress() - 1);
         }
     }
 
@@ -147,60 +186,33 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         lastZ = 0;
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
-    private final int[] imageArray = { R.drawable.shakephone2left, R.drawable.shakephone2,
-            R.drawable.shakephone2right, R.drawable.shakephone2};;
-    private ImageView image;
-    private final Handler handler = new Handler();
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.shake_event_task);
-        mp = MediaPlayer.create(this,R.raw.success);
-        image = (ImageView)findViewById(shake_phone);
-        //Run private method to setup ringtone and vibrator
-        Bundle extras = getIntent().getExtras();
-        setUpRingtoneAndVibration(extras.getInt("vibration"));
-        Runnable runnable = new Runnable() {
-            int i = 0;
-
-            public void run() {
-                image.setImageResource(imageArray[i]);
-                i++;
-                if (i > imageArray.length - 1) {
-                    i = 0;
-                }
-                handler.postDelayed(this, 500);
-            }
-        };
-        handler.postDelayed(runnable, 500);
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensorListener = new ShakeTask();
-        mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {
-            @Override
-            public void onShake() {
-                        finish();
-                        ringtone.stop();
-                        mp.start();
-                        if(vibrator!=null)
-                        vibrator.cancel();
-
-            }
-        });
-
-    }
     private void setUpRingtoneAndVibration(int vibration) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (alarmUri == null) {
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        try {
+            mediaPlayer.setDataSource(this, alarmUri);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.setVolume(1.0f, 1.0f);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            if (vibration == 1) {
+                vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(vibrationPattern, 0);
+            }
+        } catch (Exception e) {
+
         }
-        ringtone = RingtoneManager.getRingtone(this.getApplicationContext(), alarmUri);
-        ringtone.play();
-        if (vibration == 1) {
-            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(vibrationPattern, 0);
+    }
+    private void setUpDifficulty(int dif) {
+        switch (dif) {
+            case 0:
+                MIN_DIRECTION_CHANGE = 100;
+                break;
+            case 1:
+                MIN_DIRECTION_CHANGE = 500;
+                break;
+            case 2:
+                MIN_DIRECTION_CHANGE = 1000;
+                break;
         }
     }
     @Override
@@ -218,7 +230,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     }
     public void onDismissPress(View view) {
         finish();
-        ringtone.stop();
+        mediaPlayer.stop();
         if(vibrator!=null)
         vibrator.cancel();
     }
