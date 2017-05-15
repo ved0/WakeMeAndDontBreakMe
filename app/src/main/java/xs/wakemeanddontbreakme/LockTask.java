@@ -31,7 +31,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class LockTask extends AppCompatActivity implements SensorEventListener {
-    Ringtone ringtone;
     Vibrator vibrator;
     long[] vibrationPattern = {0, 1000, 1000};
 
@@ -60,8 +59,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        if(currentApiVersion >= Build.VERSION_CODES.KITKAT)
-        {
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
 
             getWindow().getDecorView().setSystemUiVisibility(flags);
 
@@ -70,14 +68,11 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
             // show up and won't hide
             final View decorView = getWindow().getDecorView();
             decorView
-                    .setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
-                    {
+                    .setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
 
                         @Override
-                        public void onSystemUiVisibilityChange(int visibility)
-                        {
-                            if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
-                            {
+                        public void onSystemUiVisibilityChange(int visibility) {
+                            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
                                 decorView.setSystemUiVisibility(flags);
 
                             }
@@ -99,7 +94,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         password = "";
         Bundle extras = getIntent().getExtras();
         setUpRingtoneAndVibration(extras.getInt("vibration"));          //Run private method to setup ringtone and vibrator
-        setUpDifficulty(extras.getInt("difficulty"));                   //Run private method to setup difficulty. NOTE: must be done before randomizePass();
+        difficulty = extras.getInt("difficulty");
         //Run password randomise
         randomizePass();
         //Run private method to setup ringtone and vibrator
@@ -109,11 +104,9 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     @SuppressLint("NewApi")
     @Override
-    public void onWindowFocusChanged(boolean hasFocus)
-    {
+    public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus)
-        {
+        if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -139,8 +132,8 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         mCurrentDegree = x;
 
         //Display "fake" value to match lock image
-        fakeVal = roundDown((360 - x) * 2.77);
-        xText.setText("Value : " + (int) fakeVal + "");
+        fakeVal = round((360 - x) * 2.77);
+        xText.setText("Selected value : " + (int) fakeVal + "");
     }
 
     public void onEnterPress(View view) {
@@ -164,6 +157,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     private void dismissAlarm() {
         mediaPlayer.stop();
+        mediaPlayer.reset();
         if (vibrator != null) {
             vibrator.cancel();
         }
@@ -173,7 +167,6 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     private void enterPassword(String pw) {
         if (pw.equals(realPassword)) {
-
             MediaPlayer temp = MediaPlayer.create(this, R.raw.success);
             temp.start();
             dismissAlarm();
@@ -199,7 +192,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         StringBuilder sb = new StringBuilder(15);
         for (int i = 0; i < 3; i++) {
             int rNum = ThreadLocalRandom.current().nextInt(0, 999 + 1);
-            rNum = roundDown(rNum);
+            rNum = round(rNum);
             sb.append(" ").append(Integer.toString(rNum));
         }
         realPassword = sb.toString();
@@ -212,32 +205,24 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
             }
         });
-
         builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
         AlertDialog alert = builder.create();
         alert.show();
     }
 
-    private void setUpDifficulty(int dif) {
-        switch (dif) {
-            case 0:
-                difficulty = 100;
-                break;
-            case 1:
-                difficulty = 10;
-                break;
-            case 2:
-                difficulty = 1;
-                break;
-        }
-    }
-
     private void setUpRingtoneAndVibration(int vibration) {
+        //Remember user's volume before we change it
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), AudioManager.FLAG_PLAY_SOUND);
+
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        }
         try {
             mediaPlayer.setDataSource(this, alarmUri);
             mediaPlayer.setLooping(true);
-            mediaPlayer.setVolume(1.0f, 1.0f);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
             mediaPlayer.prepare();
             mediaPlayer.start();
             if (vibration == 1) {
@@ -249,9 +234,22 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         }
     }
 
-    private int roundDown(double val) {
-        int roundedVal = (int) val / difficulty;
-        roundedVal *= difficulty;
+    private int round(double val) {
+        int roundedVal = 0;
+        switch (difficulty) {
+            case (0):
+                roundedVal = (int) (val + 50) / 100 * 100;
+                break;
+            case (1):
+                roundedVal = (int) (val + 5) / 100 * 100;
+                break;
+            case (2):
+                roundedVal = (int) val;
+                break;
+        }
+        if(roundedVal == 1000) {
+            roundedVal = 0;
+        }
         return roundedVal;
     }
 
@@ -279,8 +277,6 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     }
 
 
-
-
     @Override
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -289,7 +285,6 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
             return true;
 
         }
-
 
 
         return super.onKeyDown(keyCode, event);
