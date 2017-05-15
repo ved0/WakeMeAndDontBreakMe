@@ -29,7 +29,7 @@ import static xs.wakemeanddontbreakme.DBContract.DBEntry.ALARM_DIFFICULTY;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final int switchOn = 1;
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "WakeMeDontBreakMeDB";
 
     private static final String SQL_CREATE_ENTRIES =
