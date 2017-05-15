@@ -187,4 +187,10 @@ public class NfcTask extends AppCompatActivity {
         onStop();
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        return;
+    }
+
 }
