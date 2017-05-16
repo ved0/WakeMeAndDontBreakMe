@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import static xs.wakemeanddontbreakme.R.id.shake_phone;
-import static xs.wakemeanddontbreakme.R.id.visible;
 
 
 /**
@@ -159,16 +158,19 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
             Runnable updateColor = new Runnable() {
 
                 public void run() {
-                    pb.setProgress(pb.getProgress() + (int)totalMovement/20);
-                    progress = (pb.getProgress()/MIN_DIRECTION_CHANGE)*255;
+                    float temp = pb.getProgress();
+
+                    pb.setProgress((int)temp + (int)totalMovement/20);
+                    progress = ((int)temp/MIN_DIRECTION_CHANGE)*255;
                     pb.setProgressTintList(ColorStateList.valueOf(Color.argb(255,(255-progress),progress,0)));
+                    if (pb.getProgress() >= pb.getMax()) {
+                        mShakeListener.onShake();
+                        resetShakeParameters();
+                    }
                 }
             };
             handler.post(updateColor);
-            if (pb.getProgress() >= pb.getMax()) {
-                mShakeListener.onShake();
-                resetShakeParameters();
-            }
+
         } else{
             pb.setProgress(pb.getProgress() - 1);
         }
