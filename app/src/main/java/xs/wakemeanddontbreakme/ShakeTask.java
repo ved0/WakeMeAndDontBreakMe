@@ -1,25 +1,26 @@
 package xs.wakemeanddontbreakme;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.Image;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import static xs.wakemeanddontbreakme.R.id.shake_phone;
 
@@ -37,27 +38,10 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     private MediaPlayer mediaPlayer;
     /** Minimum movement force to consider. */
     private static final int MIN_FORCE = 10;
-
     /**
-     * Minimum times in a shake gesture that the direction of movement needs to
-     * change.
+     * Minimum times in a shake gesture that the direction of movement needs to change.
      */
     private int MIN_DIRECTION_CHANGE = 100;
-
-    /** Maximum pause between movements. */
-    private static final int MAX_PAUSE_BETHWEEN_DIRECTION_CHANGE = 200;
-
-    /** Maximum allowed time for shake gesture. */
-    private static final int MAX_TOTAL_DURATION_OF_SHAKE = 30000;
-
-    /** Time when the gesture started. */
-    private long mFirstDirectionChangeTime = 0;
-
-    /** Time when the last movement started. */
-    private long mLastDirectionChangeTime;
-
-    /** How many movements are considered so far. */
-    private int mDirectionChangeCount = 0;
 
     /** The last x position. */
     private float lastX = 0;
@@ -77,10 +61,6 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
      * Interface for shake gesture.
      */
     public interface OnShakeListener {
-
-        /**
-         * Called when shake gesture is detected.
-         */
         void onShake();
     }
 
@@ -99,17 +79,17 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.shake_event_task);
+        setContentView(R.layout.activity_shake_task);
+        mediaPlayer = new MediaPlayer();
         Bundle extras = getIntent().getExtras();
         setUpRingtoneAndVibration(extras.getInt("vibration"));
         setUpDifficulty(extras.getInt("difficulty"));
-        mediaPlayer = MediaPlayer.create(this,R.raw.success);
         image = (ImageView)findViewById(shake_phone);
         pb = (ProgressBar)findViewById(R.id.firstBar3);
         pb.setVisibility(View.VISIBLE);
         pb.setMax(MIN_DIRECTION_CHANGE);
         pb.setBackgroundColor(Color.argb(255,20,20,20));
-
+        showInstructions();
         Runnable runnable = new Runnable() {
             int i = 0;
 
@@ -128,15 +108,31 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {
             @Override
             public void onShake() {
-                        finish();
-
-                        mediaPlayer.start();
-                        if(vibrator!=null)
-                        vibrator.cancel();
+                Toast.makeText(mSensorListener, "Good work! Now get outta yo bed!", Toast.LENGTH_LONG).show();
+                MediaPlayer temp = MediaPlayer.create(mSensorListener, R.raw.success);
+                temp.start();
+                dismissAlarm();
+                if(vibrator!=null)
+                    vibrator.cancel();
 
             }
         });
 
+    }
+
+    public void showInstructions(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("To deactivate the alarm, shake your phone until the bar is filled.");
+        builder.setCancelable(false);
+        builder.setTitle("Shake away!");
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
+        AlertDialog alert = builder.create();
+        alert.show();
     }
     float totalMovement = 0;
     @Override
@@ -193,20 +189,24 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
      * Resets the shake parameters to their default values.
      */
     private void resetShakeParameters() {
-        mFirstDirectionChangeTime = 0;
-        mDirectionChangeCount = 0;
-        mLastDirectionChangeTime = 0;
         lastX = 0;
         lastY = 0;
         lastZ = 0;
     }
 
     private void setUpRingtoneAndVibration(int vibration) {
+        //Remember user's volume before we change it
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), AudioManager.FLAG_PLAY_SOUND);
+
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        }
         try {
             mediaPlayer.setDataSource(this, alarmUri);
             mediaPlayer.setLooping(true);
-            mediaPlayer.setVolume(1.0f, 1.0f);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
             mediaPlayer.prepare();
             mediaPlayer.start();
             if (vibration == 1) {
@@ -241,19 +241,25 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
 
     @Override
     protected void onPause() {
-        mSensorManager.unregisterListener(mSensorListener);
         super.onPause();
+        mSensorManager.unregisterListener(mSensorListener);
     }
     public void onDismissPress(View view) {
-        finish();
-        mediaPlayer.stop();
-        if(vibrator!=null)
-        vibrator.cancel();
+        dismissAlarm();
     }
     @Override
     protected void onStop(){
-        mSensorManager.unregisterListener(mSensorListener);
         super.onStop();
+        mSensorManager.unregisterListener(mSensorListener);
+    }
+    private void dismissAlarm() {
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+        if (vibrator != null) {
+            vibrator.cancel();
+        }
+        onStop();
+        finish();
     }
 
     @Override
