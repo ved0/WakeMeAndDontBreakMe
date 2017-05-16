@@ -138,7 +138,6 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         });
 
     }
-    int progress = 0;
     float totalMovement = 0;
     @Override
     public void onSensorChanged(SensorEvent se) {
@@ -158,11 +157,14 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
             Runnable updateColor = new Runnable() {
 
                 public void run() {
+                    //set the progressbars position to a new value based on shakyness done
+                    pb.setProgress(pb.getProgress() + (int)totalMovement/20);
+                    //set the progressbars color to match the position of the progressbar
                     float temp = pb.getProgress();
-
-                    pb.setProgress((int)temp + (int)totalMovement/20);
-                    progress = ((int)temp/MIN_DIRECTION_CHANGE)*255;
-                    pb.setProgressTintList(ColorStateList.valueOf(Color.argb(255,(255-progress),progress,0)));
+                    pb.setProgressTintList(ColorStateList.valueOf(Color.rgb(
+                            (180-(int)(temp/MIN_DIRECTION_CHANGE*150)),
+                            (int)(temp/MIN_DIRECTION_CHANGE*150),0)));
+                    //end the process if progress is equal to max
                     if (pb.getProgress() >= pb.getMax()) {
                         mShakeListener.onShake();
                         resetShakeParameters();
@@ -172,7 +174,18 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
             handler.post(updateColor);
 
         } else{
-            pb.setProgress(pb.getProgress() - 1);
+
+            Runnable updateColorBackwards = new Runnable() {
+
+                public void run() {
+                    pb.setProgress(pb.getProgress() - 1);
+                    float temp = pb.getProgress();
+                    pb.setProgressTintList(ColorStateList.valueOf(Color.rgb(
+                            (180 -  (int)(temp / MIN_DIRECTION_CHANGE * 150)),
+                            (int)(temp / MIN_DIRECTION_CHANGE * 150), 0)));
+                }
+            };
+            handler.post(updateColorBackwards);
         }
     }
 
@@ -223,6 +236,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         mSensorManager.registerListener(mSensorListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_UI);
+
    }
 
     @Override
