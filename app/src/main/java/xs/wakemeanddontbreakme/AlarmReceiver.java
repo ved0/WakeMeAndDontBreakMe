@@ -18,7 +18,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         int vibration = extras.getInt("vibration");
         int difficulty = extras.getInt("difficulty");
-        int rand = randInt(1, 3);
+        int rand = randInt(1, 4);
         switch (rand) {
             case 1:
                 Intent i1 = new Intent(context, LockTask.class);

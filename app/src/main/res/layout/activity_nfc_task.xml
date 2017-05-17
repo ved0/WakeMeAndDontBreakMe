@@ -3,6 +3,7 @@
     android:layout_height="fill_parent">
 
     <ImageView
+        android:id="@+id/nfc_background"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="center"
@@ -19,5 +20,14 @@
         android:textSize="20dp"
         android:textColor="#ffffffff"
         android:text="Scan tag !" />
+
+    <ProgressBar
+        android:id="@+id/progressBarLock"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressDrawable="@drawable/progressbarfill"
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:visibility="gone"/>
 
 </FrameLayout>

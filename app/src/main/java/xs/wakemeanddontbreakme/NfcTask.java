@@ -2,8 +2,10 @@ package xs.wakemeanddontbreakme;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -14,9 +16,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.Vibrator;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
@@ -27,9 +31,13 @@ import java.io.UnsupportedEncodingException;
 
 public class NfcTask extends AppCompatActivity {
     NfcAdapter nfcAdapter;
-    TextView txtTagContent;
-
+    TextView textView;
+    ProgressBar pb;
+    ImageView iv;
+    private int difficulty;
     private MediaPlayer mediaPlayer;
+    private boolean blocked1, blocked2, blocked3;
+    private boolean tag1, tag2, tag3;
     Vibrator vibrator;
     long[] vibrationPattern = {0, 1000, 1000};
 
@@ -37,7 +45,8 @@ public class NfcTask extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nfc_task);
-
+        iv = (ImageView) findViewById(R.id.nfc_background);
+        showInstructions();
         int currentApiVersion = android.os.Build.VERSION.SDK_INT;
         final int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -47,7 +56,6 @@ public class NfcTask extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         if(currentApiVersion >= Build.VERSION_CODES.KITKAT)
         {
-
             getWindow().getDecorView().setSystemUiVisibility(flags);
 
             // Code below is to handle presses of Volume up or Volume down.
@@ -68,17 +76,33 @@ public class NfcTask extends AppCompatActivity {
                         }
                     });
         }
-
+        pb = (ProgressBar)findViewById(R.id.progressBarLock);
         mediaPlayer = new MediaPlayer();
         Bundle extras = getIntent().getExtras();
+        difficulty = extras.getInt("difficulty");
+        fixProgressBar(difficulty);
         setUpRingtoneAndVibration(extras.getInt("vibration"));          //Run private method to setup ringtone and vibrator
-       //TODO setUpDifficulty(extras.getInt("difficulty"));
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        txtTagContent = (TextView) findViewById(R.id.whichTag);
-        txtTagContent.setText(whichTag());
+        textView = (TextView) findViewById(R.id.whichTag);
+        textView.setText("Find this guy!");
+        iv.setImageResource(R.drawable.vedad); //random sen
     }
 
-
+    private void fixProgressBar(int difficulty){
+        switch(difficulty){
+            case 0:
+                pb.setVisibility(View.INVISIBLE);
+                break;
+            case 1:
+                pb.setVisibility(View.VISIBLE);
+                pb.setMax(2);
+                break;
+            case 2:
+                pb.setVisibility(View.VISIBLE);
+                pb.setMax(4);
+                break;
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -92,6 +116,20 @@ public class NfcTask extends AppCompatActivity {
         disableForegroundDispatchSystem();
     }
 
+    public void showInstructions(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("To deactivate the alarm, go to the guy on the picture!");
+        builder.setCancelable(false);
+        builder.setTitle("Scan the tag!");
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     private void enableForegroundDispatchSystem() {
         Intent intent = new Intent(this, NfcTask.class).addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
@@ -100,50 +138,73 @@ public class NfcTask extends AppCompatActivity {
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters, null);
     }
 
-    private String whichTag(){
-        int random = 1;
-        String temp = "Scan tag ";
-        switch(random){
-            case 1:
-                temp += 1+"!";
-                break;
-        }
-        return temp;
-    }
-
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Parcelable[] parcelables = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-
         if (parcelables != null && parcelables.length > 0) {
-            readTextFromMessage((NdefMessage) parcelables[0]);
+                readTextFromMessage((NdefMessage) parcelables[0]);
         } else {
             Toast.makeText(this, "No NDEF messages found!", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-    private String getTagValue(String s){
-        return s.substring(s.length()-2,s.length()-1);
-    }
-
     private void readTextFromMessage(NdefMessage ndefMessage) {
         NdefRecord[] ndefRecords = ndefMessage.getRecords();
-        if(ndefRecords != null && ndefRecords.length>0){
+        if(ndefRecords != null && ndefRecords.length>0) {
             NdefRecord ndefRecord = ndefRecords[0];
             String tagContent = getTextFromNdefRecord(ndefRecord);
-            String temp = txtTagContent.getText().toString();
-            if(tagContent.equals(getTagValue(temp))){
-                MediaPlayer success = MediaPlayer.create(this, R.raw.success);
-                success.start();
+            if (tagContent.equals("1") && difficulty == 0) {
                 dismissAlarm();
             }
-        }else {
+            if(!blocked1) {
+            if (tagContent.equals("1") && difficulty != 0) {
+                    tag1 = true;
+                    iv.setImageResource(R.drawable.carl);
+                    textView.setText("Now this guy!");
+                    pb.setProgress(1);
+                    blocked1 = true;
+                }
+            }
+            // just nu 1 för min tag, 2 för carl, 3 för james och diff 0 är hard
+            if (difficulty == 1 && tag1 == true) {
+                if (tagContent.equals("2")) {
+                    dismissAlarm();
+                }
+            }
+            if (!blocked2) {
+                if (difficulty == 2 && tag1 == true) {
+                    if (tagContent.equals("2")) {
+                        tag2 = true;
+                        iv.setImageResource(R.drawable.james);
+                        textView.setText("And now this one!");
+                        pb.setProgress(2);
+                        blocked2 = true;
+                    }
+                }
+            }
+            if (!blocked3) {
+                if (tag1 == true && tag2 == true) {
+                    if (tagContent.equals("3")) {
+                        tag3 = true;
+                        iv.setImageResource(R.drawable.erik);
+                        textView.setText("And last, but not least!");
+                        pb.setProgress(3);
+                        blocked3 = true;
+                    }
+                }
+            }
+            if(tag3==true){
+                if(tagContent.equals("1")){
+                    dismissAlarm();
+                }
+            }
+        }else
+        {
             Toast.makeText(this, "No NDEF records found!", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     public String getTextFromNdefRecord(NdefRecord ndefRecord)
     {
@@ -163,11 +224,18 @@ public class NfcTask extends AppCompatActivity {
     }
 
     private void setUpRingtoneAndVibration(int vibration) {
+        //Remember user's volume before we change it
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), AudioManager.FLAG_PLAY_SOUND);
+
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        }
         try {
             mediaPlayer.setDataSource(this, alarmUri);
             mediaPlayer.setLooping(true);
-            mediaPlayer.setVolume(1.0f, 1.0f);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
             mediaPlayer.prepare();
             mediaPlayer.start();
             if (vibration == 1) {
@@ -179,11 +247,13 @@ public class NfcTask extends AppCompatActivity {
         }
     }
 
+
     private void dismissAlarm() {
         mediaPlayer.stop();
         if (vibrator != null) {
             vibrator.cancel();
         }
+        Toast.makeText(this, "Good work! Now enjoy your day!", Toast.LENGTH_LONG).show();
         onStop();
         finish();
     }

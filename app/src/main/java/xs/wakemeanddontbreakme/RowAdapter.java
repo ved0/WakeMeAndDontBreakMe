@@ -72,7 +72,12 @@ public class RowAdapter extends BaseAdapter {
             final String [] alarmInfo = db.getAllAlarms().get(position).split("\\r?\\n");
             if(alarmInfo[2].equals("Custom")){
                 String customDays = db.getAlarmDays(alarmInfo[0]);
-                alarmText.setText(alarmInfo[0]+"\n" +alarmInfo[1]+"\n"+customDays);
+                String [] eii = customDays.split(" ");
+                String temp = "";
+                for(String st: eii){
+                    temp += st.substring(0,1)+" ";
+                }
+                alarmText.setText(alarmInfo[0]+"\n" +alarmInfo[1]+"\n"+temp);
             } else {
                 alarmText.setText(db.getAllAlarms().get(position));
             }
