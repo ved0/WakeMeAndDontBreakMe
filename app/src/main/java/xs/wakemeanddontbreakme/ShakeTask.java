@@ -3,7 +3,10 @@ package xs.wakemeanddontbreakme;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,6 +18,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.support.annotation.ColorInt;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -72,8 +77,13 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
-    private final int[] imageArray = { R.drawable.shakephone2left, R.drawable.shakephone2,
-            R.drawable.shakephone2right, R.drawable.shakephone2};;
+    public static Drawable setTint(Drawable d, int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(wrappedDrawable, color);
+        return wrappedDrawable;
+    }
+    private final int[] imageArray = { R.drawable.shakedaphone2, R.drawable.shakedaphone,
+            R.drawable.shakedaphone3, R.drawable.shakedaphone};
     private ImageView image;
     private final Handler handler = new Handler();
     @Override

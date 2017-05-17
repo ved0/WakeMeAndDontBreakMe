@@ -9,7 +9,7 @@
         android:backgroundTintMode="src_atop"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/shakephone2"
+
         />
 
     <ProgressBar
