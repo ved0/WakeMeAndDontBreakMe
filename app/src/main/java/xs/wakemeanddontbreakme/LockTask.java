@@ -14,6 +14,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,7 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,14 +35,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class LockTask extends AppCompatActivity implements SensorEventListener {
     Vibrator vibrator;
     long[] vibrationPattern = {0, 1000, 1000};
-
-    private int currentApiVersion;
-
+    private MediaPlayer mediaPlayer;
+    private AudioManager am;
     private ImageView lock;
     private TextView xText, passText;
     private SensorManager mSensorManager;
     private Sensor mOrientation;
-    private MediaPlayer mediaPlayer;
     private float mCurrentDegree = 0f;
     private double fakeVal;
     private String realPassword, password;
@@ -110,8 +110,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
     }
 
     private void dismissAlarm() {
-        mediaPlayer.stop();
-        mediaPlayer.reset();
+        mediaPlayer.release();
         if (vibrator != null) {
             vibrator.cancel();
         }
@@ -121,8 +120,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     private void enterPassword(String pw) {
         if (pw.equals(realPassword)) {
-            MediaPlayer temp = MediaPlayer.create(this, R.raw.success);
-            temp.start();
+            taskCompleted();
             dismissAlarm();
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -166,7 +164,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
     private void setUpRingtoneAndVibration(int vibration) {
         //Remember user's volume before we change it
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), AudioManager.FLAG_PLAY_SOUND);
 
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -188,6 +186,18 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         }
     }
 
+    private void taskCompleted() {
+        //Play completion sound
+        try {
+            MediaPlayer temp = MediaPlayer.create(this, R.raw.success);
+            temp.setVolume(1f, 1f);
+            temp.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(this, "You did it! Have a great day!", Toast.LENGTH_LONG).show();
+    }
+
     private int round(double val) {
         int roundedVal = 0;
         switch (difficulty) {
@@ -201,7 +211,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
                 roundedVal = (int) val;
                 break;
         }
-        if(roundedVal == 1000) {
+        if (roundedVal == 1000) {
             roundedVal = 0;
         }
         return roundedVal;
