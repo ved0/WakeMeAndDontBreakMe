@@ -16,7 +16,7 @@
         tools:layout_editor_absoluteY="128dp" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/instructionField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/microphone"
@@ -29,6 +29,18 @@
         android:inputType="textPersonName"
         android:singleLine="false"
         android:text="Shout to wake up!" />
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_above="@id/shake_phone"
+        android:layout_centerHorizontal="true"
+        android:progressDrawable="@drawable/progressbarfill"
+        android:visibility="gone"
+
+        />
 
 
 </RelativeLayout>
