@@ -24,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
+import java.util.Stack;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Vedad on 2017-05-15.
@@ -33,9 +35,11 @@ public class NfcTask extends AppCompatActivity {
     NfcAdapter nfcAdapter;
     TextView textView;
     ProgressBar pb;
+    private int order;
     ImageView iv;
+    private Stack<Integer> randOrderMembers;
     private int difficulty;
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer, success;
     private boolean blocked1, blocked2, blocked3;
     private boolean tag1, tag2, tag3;
     Vibrator vibrator;
@@ -78,14 +82,39 @@ public class NfcTask extends AppCompatActivity {
         }
         pb = (ProgressBar)findViewById(R.id.progressBarLock);
         mediaPlayer = new MediaPlayer();
+        success = MediaPlayer.create(this, R.raw.success);
+        success.setVolume(1.0f,1.0f);
         Bundle extras = getIntent().getExtras();
+        randOrderMembers = new Stack<>();
         difficulty = extras.getInt("difficulty");
         fixProgressBar(difficulty);
         setUpRingtoneAndVibration(extras.getInt("vibration"));          //Run private method to setup ringtone and vibrator
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         textView = (TextView) findViewById(R.id.whichTag);
         textView.setText("Find this guy!");
-        iv.setImageResource(R.drawable.vedad); //random sen
+        randomOrder();
+        order = getRandomGuy();
+        iv.setImageResource(order); //random sen
+    }
+
+
+    private String rightTagToRightGuy(int drawableId){
+        String temp = "";
+        switch(drawableId){
+            case R.drawable.vedad:
+                temp = "1";
+             break;
+            case R.drawable.carl:
+                temp = "2";
+             break;
+            case R.drawable.james:
+                temp = "3";
+                break;
+            case R.drawable.erik:
+                temp = "4";
+                break;
+        }
+    return temp;
     }
 
     private void fixProgressBar(int difficulty){
@@ -114,6 +143,33 @@ public class NfcTask extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         disableForegroundDispatchSystem();
+    }
+
+    private static int randInt(int min, int max) {
+        int randomNum = ThreadLocalRandom.current().nextInt(min, max + 1);
+        return randomNum;
+    }
+
+
+
+    private int getRandomGuy(){
+        return randOrderMembers.pop();
+    }
+
+    private void randomOrder(){
+        int[] theTeam = {R.drawable.vedad, R.drawable.carl, R.drawable.erik,R.drawable.james};
+        int size = 0;
+        boolean inserted = false;
+        while(!inserted){
+            int random = randInt(0,3);
+            if(!randOrderMembers.contains(theTeam[random])){
+            randOrderMembers.push(theTeam[random]);
+                size++;
+            }
+            if(size == 4){
+            inserted = true;
+            }
+            }
     }
 
     public void showInstructions(){
@@ -153,31 +209,37 @@ public class NfcTask extends AppCompatActivity {
         NdefRecord[] ndefRecords = ndefMessage.getRecords();
         if(ndefRecords != null && ndefRecords.length>0) {
             NdefRecord ndefRecord = ndefRecords[0];
+            String toCompare = rightTagToRightGuy(order);
             String tagContent = getTextFromNdefRecord(ndefRecord);
-            if (tagContent.equals("1") && difficulty == 0) {
+            if (tagContent.equals(toCompare) && difficulty == 0) {
                 dismissAlarm();
             }
             if(!blocked1) {
-            if (tagContent.equals("1") && difficulty != 0) {
+            if (tagContent.equals(toCompare) && difficulty != 0) {
                     tag1 = true;
-                    iv.setImageResource(R.drawable.carl);
+                    order = getRandomGuy();
+                    iv.setImageResource(order);
+                    toCompare = rightTagToRightGuy(order);
                     textView.setText("Now this guy!");
+                    success.start();
                     pb.setProgress(1);
                     blocked1 = true;
                 }
             }
-            // just nu 1 för min tag, 2 för carl, 3 för james och diff 0 är hard
             if (difficulty == 1 && tag1 == true) {
-                if (tagContent.equals("2")) {
+                if (tagContent.equals(toCompare)) {
                     dismissAlarm();
                 }
             }
             if (!blocked2) {
                 if (difficulty == 2 && tag1 == true) {
-                    if (tagContent.equals("2")) {
+                    if (tagContent.equals(toCompare)) {
                         tag2 = true;
-                        iv.setImageResource(R.drawable.james);
+                        order = getRandomGuy();
+                        toCompare = rightTagToRightGuy(order);
+                        iv.setImageResource(order);
                         textView.setText("And now this one!");
+                        success.start();
                         pb.setProgress(2);
                         blocked2 = true;
                     }
@@ -185,17 +247,20 @@ public class NfcTask extends AppCompatActivity {
             }
             if (!blocked3) {
                 if (tag1 == true && tag2 == true) {
-                    if (tagContent.equals("3")) {
+                    if (tagContent.equals(toCompare)) {
                         tag3 = true;
-                        iv.setImageResource(R.drawable.erik);
+                        order = getRandomGuy();
+                        toCompare = rightTagToRightGuy(order);
+                        iv.setImageResource(order);
                         textView.setText("And last, but not least!");
+                        success.start();
                         pb.setProgress(3);
                         blocked3 = true;
                     }
                 }
             }
             if(tag3==true){
-                if(tagContent.equals("1")){
+                if(tagContent.equals(toCompare)){
                     dismissAlarm();
                 }
             }
@@ -250,10 +315,11 @@ public class NfcTask extends AppCompatActivity {
 
     private void dismissAlarm() {
         mediaPlayer.stop();
+        success.start();
         if (vibrator != null) {
             vibrator.cancel();
         }
-        Toast.makeText(this, "Good work! Now enjoy your day!", Toast.LENGTH_LONG).show();
+      //  Toast.makeText(this, "Good work! Now enjoy your day!", Toast.LENGTH_LONG).show();
         onStop();
         finish();
     }
