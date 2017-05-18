@@ -319,8 +319,7 @@ public class NfcTask extends AppCompatActivity {
         if (vibrator != null) {
             vibrator.cancel();
         }
-      //  Toast.makeText(this, "Good work! Now enjoy your day!", Toast.LENGTH_LONG).show();
-        onStop();
+        Toast.makeText(this, "Good work! Now enjoy your day!", Toast.LENGTH_LONG).show();
         finish();
     }
 
