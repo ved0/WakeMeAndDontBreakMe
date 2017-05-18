@@ -14,6 +14,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
@@ -35,10 +36,9 @@ public class NfcTask extends AppCompatActivity {
     NfcAdapter nfcAdapter;
     TextView textView;
     ProgressBar pb;
-    private int order;
     ImageView iv;
     private Stack<Integer> randOrderMembers;
-    private int difficulty;
+    private int difficulty, order;
     private MediaPlayer mediaPlayer, success;
     private boolean blocked1, blocked2, blocked3;
     private boolean tag1, tag2, tag3;
@@ -150,8 +150,6 @@ public class NfcTask extends AppCompatActivity {
         return randomNum;
     }
 
-
-
     private int getRandomGuy(){
         return randOrderMembers.pop();
     }
@@ -221,6 +219,8 @@ public class NfcTask extends AppCompatActivity {
                     iv.setImageResource(order);
                     toCompare = rightTagToRightGuy(order);
                     textView.setText("Now this guy!");
+                    mediaPlayer.pause();
+                    delayTheSound();
                     success.start();
                     pb.setProgress(1);
                     blocked1 = true;
@@ -239,6 +239,8 @@ public class NfcTask extends AppCompatActivity {
                         toCompare = rightTagToRightGuy(order);
                         iv.setImageResource(order);
                         textView.setText("And now this one!");
+                        mediaPlayer.pause();
+                        delayTheSound();
                         success.start();
                         pb.setProgress(2);
                         blocked2 = true;
@@ -253,6 +255,8 @@ public class NfcTask extends AppCompatActivity {
                         toCompare = rightTagToRightGuy(order);
                         iv.setImageResource(order);
                         textView.setText("And last, but not least!");
+                        mediaPlayer.pause();
+                        delayTheSound();
                         success.start();
                         pb.setProgress(3);
                         blocked3 = true;
@@ -268,6 +272,16 @@ public class NfcTask extends AppCompatActivity {
         {
             Toast.makeText(this, "No NDEF records found!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void delayTheSound(){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayer.start();
+            }
+        }, 200);
     }
 
 
