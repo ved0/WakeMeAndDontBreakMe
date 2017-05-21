@@ -48,7 +48,7 @@ public class ShoutTask extends AppCompatActivity {
     int maxProgressNumber;
     int fightBack;
 
-
+    private boolean okForProgress = false;
 
     private double lastLevel = 0;
     private int difficulty;
@@ -175,19 +175,16 @@ public class ShoutTask extends AppCompatActivity {
                             } else if (lastLevel > 50 && lastLevel<100) {
                                 micImage.setImageResource(R.drawable.microphone2);
                                 timeStartLevel3 = System.currentTimeMillis();
-                                handler.post(updateColor);
-
+                                if (okForProgress) {
+                                    handler.post(updateColor);
+                                }
                             } else if (lastLevel > 100) {
                                 timeStartLevel2 = System.currentTimeMillis();
                                 micImage.setImageResource(R.drawable.microphone3);
-                                handler.post(updateColor);
-
-
-
-
+                                if (okForProgress) {
+                                    handler.post(updateColor);
+                                }
                             }
-
-
                         }
                     });
                 }
@@ -228,7 +225,7 @@ public class ShoutTask extends AppCompatActivity {
         builder.setTitle("SHOUT LOUDLY!");
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-
+                okForProgress = true;
             }
         });
         builder.setIcon(android.R.drawable.ic_lock_idle_alarm);

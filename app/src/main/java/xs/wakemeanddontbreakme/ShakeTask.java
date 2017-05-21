@@ -129,7 +129,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         });
 
     }
-
+    private boolean okForProgress = false;
     public void showInstructions(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("To deactivate the alarm, shake your phone until the bar is filled.");
@@ -137,7 +137,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         builder.setTitle("Shake away!");
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-
+                okForProgress = true;
             }
         });
         builder.setIcon(android.R.drawable.ic_lock_idle_alarm);
@@ -177,8 +177,9 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
                     }
                 }
             };
-            handler.post(updateColor);
-
+            if(okForProgress) {
+                handler.post(updateColor);
+            }
         } else{
 
             Runnable updateColorBackwards = new Runnable() {
@@ -191,6 +192,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
                             (int)(temp / MIN_DIRECTION_CHANGE * 150), 0)));
                 }
             };
+
             handler.post(updateColorBackwards);
         }
     }
