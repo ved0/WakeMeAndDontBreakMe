@@ -118,7 +118,7 @@ public class ShakeTask extends AppCompatActivity implements SensorEventListener 
         mSensorListener.setOnShakeListener(new ShakeTask.OnShakeListener() {
             @Override
             public void onShake() {
-                Toast.makeText(mSensorListener, "Good work! Now get outta yo bed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(mSensorListener, "Good work! Time to get up!", Toast.LENGTH_LONG).show();
                 MediaPlayer temp = MediaPlayer.create(mSensorListener, R.raw.success);
                 temp.start();
                 dismissAlarm();

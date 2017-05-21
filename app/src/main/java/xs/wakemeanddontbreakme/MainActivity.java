@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                         previewIntent.putExtra("difficulty", 2);
                         break;
                 }
-                previewIntent.putExtra("vibration", 0);
+                previewIntent.putExtra("vibration", 1);
                 startActivity(previewIntent);
                 return true;
             }

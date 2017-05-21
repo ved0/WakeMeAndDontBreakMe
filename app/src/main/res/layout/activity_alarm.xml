@@ -213,7 +213,7 @@
         android:drawableTop="@android:drawable/ic_menu_delete"
         android:gravity="center"
         android:onClick="onDeletePress"
-        android:paddingTop="5dp"
+        android:paddingTop="15dp"
         android:scaleType="fitCenter"
         android:textColor="#fff"
         android:visibility="gone"
