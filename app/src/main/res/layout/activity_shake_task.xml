@@ -23,16 +23,17 @@
         android:visibility="gone"
         
         />
+
     <Button
         android:id="@+id/dismiss_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/shake_phone"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="6dp"
         android:layout_marginTop="16dp"
         android:onClick="onDismissPress"
         android:text="DISMISS"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/shake_phone"
 
-        />
+        android:visibility="invisible" />
 </RelativeLayout>

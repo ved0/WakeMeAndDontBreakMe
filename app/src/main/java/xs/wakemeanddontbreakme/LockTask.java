@@ -62,6 +62,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
         xText.setCursorVisible(false);
         passText = (TextView) findViewById(R.id.passcode_text);
         passText.setCursorVisible(false);
+        passText.setText("ENTERED: ");
         password = "";
         Bundle extras = getIntent().getExtras();
         setUpRingtoneAndVibration(extras.getInt("vibration"));          //Run private method to setup ringtone and vibrator
@@ -87,14 +88,14 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
 
         //Display "fake" value to match lock image
         fakeVal = round((360 - x) * 2.77);
-        xText.setText("Selected value : " + (int) fakeVal + "");
+        xText.setText("CURRENT : " + (int) fakeVal + "");
     }
 
     public void onEnterPress(View view) {
         counter++;
         password = password.concat(" ");
         password = password.concat(Integer.toString((int) fakeVal));
-        passText.setText("PASS: " + password);
+        passText.setText("ENTERED: " + password);
         if (counter == 3) {
             enterPassword(password);
             password = "";
@@ -205,7 +206,7 @@ public class LockTask extends AppCompatActivity implements SensorEventListener {
                 roundedVal = (int) (val + 50) / 100 * 100;
                 break;
             case (1):
-                roundedVal = (int) (val + 5) / 100 * 100;
+                roundedVal = (int) (val + 5) / 10 * 10;
                 break;
             case (2):
                 roundedVal = (int) val;
